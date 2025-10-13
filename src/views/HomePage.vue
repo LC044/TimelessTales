@@ -1,7 +1,7 @@
 <template>
-    <div class="fullscreen-div">
+    <div class="fullscreen-div max-w-2xl mx-auto p-6">
         <div class="hero-content item">
-            <h2 class="greeting">Hi, I’m Innei <span class="wave">👋</span></h2>
+            <h2 class="greeting">Hi, I’m SiYuan <span class="wave">👋</span></h2>
             <h1 class="title">A NodeJS Full Stack &lt;Developer /&gt;</h1>
             <p class="subtitle">An independent developer coding with love.</p>
 
@@ -19,16 +19,48 @@
                 <!-- ... -->
             </ul>
         </div>
+        
         <div class="item">
             <!-- 角色插画 -->
             <img src="/avatar.png" alt="avatar" class="hero-avatar" />
         </div>
-    </div> 
+        <!-- 卡片列表（网格布局） -->
+    </div>
+    <div class="center inset-x-0 bottom-0 mt-12 flex flex-col lg:absolute lg:mt-0 center text-neutral-800/80 dark:text-neutral-200/80" style="opacity: 1; transform: none;">
+      <small class="text-center">司然后能行，行所以致远。</small>
+      <span class="mt-8 animate-bounce text-center">
+        <i class="mgc_down_line text-3xl inline-block">
+        </i>
+      </span>
+    </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 justify-center">
+      <ToolCard
+        icon="/icon/EasyBox.png"
+        title="EasyBox"
+        desc="PC 端通用工具合集软件，致力于打造一款生活、工作、学习、娱乐等多方面功能集合的软件"
+        linkText="查看详情"
+        link= "https://memotrace.cn/tools/easybox/"
+      />
+      <ToolCard
+        icon="/icon/TraceBoard.png"
+        title="TraceBoard"
+        desc="统计键盘使用情况，可视化按键点击情况——记录打工人日常"
+        linkText="查看详情"
+        link= "https://memotrace.cn/tools/traceboard/"
+      />
+      <ToolCard
+        icon="/icon/PostgreSQL.svg"
+        title="BenchMarkSQL"
+        desc="基于BenchmarkSQL5.0开发，新增自动化测试脚本以及测试报告查看服务"
+        linkText="查看详情"
+        link= "https://github.com/LC044/BenchmarkSQL"
+      />
+    </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-
+import ToolCard from "../components/ToolCard.vue"; // 引入卡片组件
 defineProps({
   msg: String,
 })
@@ -136,11 +168,32 @@ const count = ref(0)
 /* 漂浮动画示例 */
 @keyframes floatUpDown {
   from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
+  to { transform: translateY(-20px); }
 }
 
 /* 响应式处理：小屏幕将插画挪到下方 / 调整文本对齐 */
 @media (max-width: 767px) {
+  .fullscreen-div {
+      position: relative;
+      display: flex;
+      flex-direction:column;
+      justify-content: center;
+      align-items: center;
+      /* width: 100vw; */
+      height: 100vh;
+      max-width: 1080px;
+  }
+  .content {
+      display: flex;
+      gap: 20px;
+  }
+  .item {
+      flex: 0;
+      display: flex;
+      flex-direction:column;
+      justify-content: center;
+      /* align-items: center; */
+  }
   .hero {
     align-items: center; /* 垂直方向居中 */
     text-align: center;

@@ -1,6 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* src/styles/theme.css */
+:root {
+  --bg-color: #fafafa;
+  --text-color: #333333;
+  --accent-color: #4FC3F7;
+}
+
+.dark {
+  --bg-color: #282C34;
+  --text-color: #E0E0E0;
+  --accent-color: #61AFEF;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -69,13 +82,16 @@ button:focus-visible {
 /* 全局或 App 级别基础设置 */
 #app {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #000;
-  background-color: #fafafa; /* 根据需求可改成纯白 #fff */
+  color: #333; /* 字体颜色 */
+  /* background: linear-gradient(to right, #E3B5C6, #D8C6B8); */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
   min-height: 100vh;
   width: 100vw;
   margin: 0 auto;
   padding: 0rem;
-  display: flex;
+  /* display: flex; */
   flex-direction:column;
   justify-content: center;
   align-items: center;

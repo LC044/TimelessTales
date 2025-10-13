@@ -1,184 +1,93 @@
 <template>
     <header class="header">
-        
-      <nav class="nav-bar">
         <!-- 左侧：LOGO 或标题 -->
-        <div class="logo-wrapper">
-          <!-- 可以使用一张 Logo 图片，也可以是文字 -->
-          <img src="/src/assets/logo.png" alt="Logo" class="logo" />
-          <h1 class="site-title">拾光物语</h1>
+        <div class="logo-wrapper destop-only">
+            <!-- 可以使用一张 Logo 图片，也可以是文字 -->
+            <img src="/src/assets/logo.png" alt="Logo" class="logo" />
+            <h1 class="site-title">拾光物语</h1>
         </div>
-        <div class="nav-item">
-            <!-- 中间：常规导航链接（PC端可见 / 移动端隐藏） -->
-            <ul class="nav-links desktop-only">
-            <li v-for="(link, i) in navLinks" :key="i">
-                <a :href="link.href" class="nav-link">{{ link.label }}</a>
-            </li>
-        </ul>
-        </div>
-        <!-- 右侧：汉堡按钮（移动端可见） -->
-        <div class="hamburger mobile-only" @click="toggleMenu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </nav>
-  
-      <!-- 移动端下拉菜单 / 侧边菜单 (可根据需要修改动画方式) -->
-      <transition name="slide-fade">
-        <ul class="mobile-menu" v-if="isMenuOpen">
-          <li v-for="(link, i) in navLinks" :key="i">
-            <a :href="link.href" class="nav-link">{{ link.label }}</a>
-          </li>
-        </ul>
-      </transition>
+        <nav class="nav-bg bg-light-bg shadow-md rounded-full px-4 py-1 flex justify-center space-x-2 fixed left-1/2 transform -translate-x-1/2">
+                <RouterLink 
+                v-for="(item, index) in navLinks" 
+                :key="index" 
+                :to="item.href"
+                class="relative px-1 py-1 bg-blue text-light-text3 hover:text-accent-fresh-mint"
+                active-class="transition ease-in-out text-accent-fresh-mint"
+                >
+                {{ item.label }}
+                <span v-if="$route.href === item.href" class="absolute bottom-0 left-0 w-full h-0.5 bg-accent-fresh-mint"></span>
+                </RouterLink>
+
+        </nav>
     </header>
   </template>
   
-  <script setup>
+<script setup>
   import { ref } from 'vue'
-  
-  const isMenuOpen = ref(false)
-  function toggleMenu() {
-    isMenuOpen.value = !isMenuOpen.value
-  }
-  
+  import RippleButton from '@/components/RippleButton.vue'
   // 示例导航数据，可根据需要替换
   const navLinks = [
-    { label: '首页', href: '#' },
-    { label: '文档', href: '#' },
-    { label: '手记', href: '#' },
-    { label: '图库', href: '#' },
-    { label: '历史', href: '#' },
-    { label: '更多', href: '#' }
+    { label: '首页', href: '/' },
+    { label: '文档', href: '/blog' },
+    { label: '项目', href: '/project' },
+    { label: '图库', href: '/more' },
+    { label: '历史', href: '/more' },
+    { label: '更多', href: '/more' }
   ]
-  </script>
+</script>
   
-  <style scoped>
-  /* 可以根据需要自定义断点 */
-  @media (min-width: 768px) {
-    .mobile-only { 
-      display: none; 
-    }
-    .desktop-only { 
-      display: flex; 
-    }
-  }
-  
-  @media (max-width: 767px) {
-    .mobile-only { 
-      display: block; 
-    }
-    .desktop-only { 
-      display: none; 
-    }
-  }
-  
-  .header {
+<style scoped>
+.header {
     position: sticky;
     width: 100vw;
     top: 0;
     z-index: 10;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  }
-  
-  .nav-bar {
+    /* background: linear-gradient(to right, #E3B5C6, #D8C6B8); */
+    /* background: linear-gradient(to right, #E3B5C6, #D4C2D8); */
+    /* box-shadow: 0 2px 10px rgba(0,0,0,0.05); */
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    align-items: center; /* 垂直居中对齐 */
-    max-width: 1080px;
+    flex-direction: column;
+    justify-content: center; /* 垂直居中 */
     margin: 0 auto;
     padding: 0 1rem;
     height: 60px;
-  }
-  .nav-item{
-    position: absolute; /* B元素绝对定位 */
-    left: 50%; /* 左侧50% */
-    transform: translateX(-50%); /* 向左移动自身宽度的一半 */
-  }
-  .logo-wrapper {
+}
+.nav-bg{
+    /* background: linear-gradient(to right, #D8C6B8, #D4C2D8); */
+    /* width: 600px; */
+    height: 40px;
+}
+.logo-wrapper {
     display: flex;
     align-items: center;
-  }
-  
-  .logo {
+    /* padding-top:10px; */
+}
+
+.logo {
     height: 32px;
     width: auto;
-  }
-  
-  .nav-links {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .nav-link {
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s;
-  }
-  
-  .nav-link:hover {
-    color: #e67e99; /* 柔和的粉色或其他风格色 */
-  }
-  
-  /* 汉堡按钮 */
-  .hamburger {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-  }
-  
-  .hamburger span {
-    display: block;
-    height: 2px;
-    background-color: #333;
-    transition: all 0.3s;
-  }
-  
-  /* 移动端下拉菜单 */
-  .mobile-menu {
-    position: absolute;
-    top: 60px; /* 与导航栏高度相同 */
-    right: 0;
-    background-color: #fff;
-    border: 1px solid #eee;
-    width: 150px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  .mobile-menu li {
-    list-style: none;
-  }
-  
-  .mobile-menu li a {
-    display: block;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #f0f0f0;
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .mobile-menu li a:hover {
-    background-color: #f7f7f7;
-  }
-  
-  .slide-fade-enter-active, .slide-fade-leave-active {
-    transition: all 0.3s ease;
-  }
-  .slide-fade-enter-from, .slide-fade-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  .site-title{
+}
+/* 过渡动画 */
+.router-link-active {
+    font-weight: bold;
+    color: #9333ea;
+}
+.site-title{
     font: 1.5em sans-serif;
     margin-left: 10px;
     padding-left: 0px;
-  }
-  </style>
+    color: #000; /* 深棕色 */
+    font-weight: bold;
+}
+
+@media (max-width: 767px) {
+    .destop-only{
+        display: none;
+    }
+    .nav-bg{
+        /* background: linear-gradient(to right, #D8C6B8, #D4C2D8); */
+        width: 767px;
+    }
+}
+</style>
   
