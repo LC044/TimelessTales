@@ -2,8 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-
-[class^='mgc_']::before,
-[class*=' mgc_']::before {
-  color: inherit !important;
-}

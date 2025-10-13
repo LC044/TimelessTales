@@ -68,6 +68,13 @@ const toolGroups = ref([
   {
     category: "入门学习",
     tools: [
+        {
+        icon: "/icon/Report.svg",
+        title: "AnnualReport",
+        desc: "微信年度聊天报告模板",
+        linkText: "查看详情",
+        link: "https://github.com/LC044/AnnualReport"
+      },
       {
         icon: "/icon/ProMakr.png",
         title: "ProMakr 简记",

@@ -1,30 +1,39 @@
 <template>
-    <div class="fullscreen-div max-w-2xl mx-auto p-6">
+    <div class="mx-auto mt-20 min-w-0 max-w-7xl overflow-hidden lg:mt-[-4.5rem] lg:h-dvh lg:min-h-[800px] lg:px-8">
+      <div class="relative mx-auto block size-full min-w-0 max-w-[1800px] flex-col flex-wrap items-center lg:flex lg:flex-row">
         <div class="hero-content item">
-            <h2 class="greeting">Hi, I’m SiYuan <span class="wave">👋</span></h2>
-            <h1 class="title">A NodeJS Full Stack &lt;Developer /&gt;</h1>
-            <p class="subtitle">An independent developer coding with love.</p>
+            <h2 class="greeting p-2 text-4xl">Hi, I’m <span class="font-bold">SiYuan</span> <span class="wave">👋</span></h2>
+            <h1 class="title p-2 text-4xl">An undergraduate student </h1>
+            <p class="subtitle p-2 text-4xl">studying computer science with a research focus on databases.</p>
 
             <!-- 社交链接/图标列表 -->
             <ul class="social-links">
-                <li><a href="#" target="_blank" rel="noreferrer"> 
-                <i class="fab fa-github"></i>
-                </a></li>
-                <li><a href="#" target="_blank" rel="noreferrer"> 
-                <i class="fab fa-twitter"></i>
-                </a></li>
-                <li><a href="#" target="_blank" rel="noreferrer">
-                <i class="fab fa-weibo"></i>
-                </a></li>
+                <li class="center flex aspect-square size-10 text-4xl rounded-full">
+                  <a href="https://github.com/LC044" target="_blank" rel="noreferrer">
+                    <i class="mgc_github_2_line text-light-text1"></i>
+                  </a>
+                </li>
+                <li class="center flex aspect-square size-10 text-4xl rounded-full text-white">
+                  <a href="mailto:sixyuan044@gmail.com" target="_blank" rel="noreferrer">
+                    <i class="mgc_mailbox_line text-light-text1"></i>
+                  </a>
+                </li>
+                <li class="center flex aspect-square size-10 text-4xl rounded-full text-white">
+                  <a href="https://blog.lc044.love" target="_blank" rel="noreferrer">
+                    <i class="mgc_comment_2_line text-light-text1"></i>
+                  </a>
+                </li>
                 <!-- ... -->
             </ul>
         </div>
-        
+
         <div class="item">
             <!-- 角色插画 -->
             <img src="/avatar.png" alt="avatar" class="hero-avatar" />
         </div>
         <!-- 卡片列表（网格布局） -->
+      </div>
+
     </div>
     <div class="center inset-x-0 bottom-0 mt-12 flex flex-col lg:absolute lg:mt-0 center text-neutral-800/80 dark:text-neutral-200/80" style="opacity: 1; transform: none;">
       <small class="text-center">司然后能行，行所以致远。</small>
@@ -88,10 +97,10 @@ const count = ref(0)
 }
 .item {
     flex: 1;
-    display: flex;
+    /* display: flex; */
     flex-direction:column;
     justify-content: center;
-    /* align-items: center; */
+    align-items: center;
 }
 
 /* 主内容区域布局 */
@@ -101,7 +110,7 @@ const count = ref(0)
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
-  background-color: #b02c2c; /* 根据需求可改成纯白 #fff */
+  /* background-color: #b02c2c; 根据需求可改成纯白 #fff */
   flex-direction: column;
   align-items: center; /* 在大屏可改为居中 */
   justify-content: center;
@@ -113,10 +122,11 @@ const count = ref(0)
 }
 /* 文本样式 */
 .greeting {
-  font-size: 1.2rem;
-  color: #999;
+  font-size: 2rem;
+  color: #888;
   margin: 0;
 }
+
 .wave {
   display: inline-block;
   animation: wave 1s infinite alternate;
@@ -128,7 +138,7 @@ const count = ref(0)
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin: 0;
   color: #222;
 }
@@ -148,7 +158,7 @@ const count = ref(0)
 }
 
 .social-links li a {
-  font-size: 1.2rem;
+  /* font-size: 2rem; */
   color: #666;
   transition: transform 0.2s, color 0.2s;
 }
@@ -163,6 +173,8 @@ const count = ref(0)
   max-width: 40vw;
   object-fit: contain;
   animation: floatUpDown 3s ease-in-out infinite alternate;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 漂浮动画示例 */

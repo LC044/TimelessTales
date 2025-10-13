@@ -9,7 +9,7 @@
     <h3 class="text-textDark font-semibold text-lg mb-2">{{ title }}</h3>
     <p class="text-textLight text-sm mb-4">{{ desc }}</p>
     <!-- 链接区（带箭头图标） -->
-    <a :href="link" class="text-accentPink text-sm flex items-center hover:underline" target="_blank">
+    <a :href="link" class="text-accentPink text-sm flex items-center text-accent-fresh-mint hover:underline" target="_blank">
       {{ linkText }}
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

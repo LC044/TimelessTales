@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 /* src/styles/theme.css */
+[class^='mgc_']::before, [class*=' mgc_']::before {
+  color: inherit !important;
+}
+
 :root {
   --bg-color: #fafafa;
   --text-color: #333333;
