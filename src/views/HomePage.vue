@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto mt-20 min-w-0 max-w-7xl overflow-hidden lg:mt-[-4.5rem] lg:h-dvh lg:min-h-[800px] lg:px-8">
+    <div class="mx-auto mt-20 min-w-0 max-w-7xl overflow-hidden lg:mt-[-4.5rem] lg:h-dvh lg:px-8">
       <div class="relative mx-auto block size-full min-w-0 max-w-[1800px] flex-col flex-wrap items-center lg:flex lg:flex-row">
         <div class="hero-content item">
             <h2 class="greeting p-2 text-4xl">Hi, I’m <span class="font-bold">SiYuan</span> <span class="wave">👋</span></h2>
@@ -48,14 +48,14 @@
         title="EasyBox"
         desc="PC 端通用工具合集软件，致力于打造一款生活、工作、学习、娱乐等多方面功能集合的软件"
         linkText="查看详情"
-        link= "https://memotrace.cn/tools/easybox/"
+        link= "https://github.com/LC044/EasyBox"
       />
       <ToolCard
         icon="/icon/TraceBoard.png"
         title="TraceBoard"
         desc="统计键盘使用情况，可视化按键点击情况——记录打工人日常"
         linkText="查看详情"
-        link= "https://memotrace.cn/tools/traceboard/"
+        link= "https://github.com/LC044/TraceBoard"
       />
       <ToolCard
         icon="/icon/PostgreSQL.svg"

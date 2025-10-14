@@ -6,10 +6,12 @@
       <RouterView />
     </transition>
   </div>
+  <Footer />
 </template>
 
 <script setup>
 import NavBar from './components/NavBar.vue'
+import Footer from './components/Footer.vue';
 import HomePage from './views/HomePage.vue'
 </script>
 

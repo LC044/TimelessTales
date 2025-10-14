@@ -47,14 +47,16 @@ const toolGroups = ref([
         title: "EasyBox",
         desc: "PC 端通用工具合集软件，致力于打造一款生活、工作、学习、娱乐等多方面功能集合的软件，有PDF工具箱、图片工具箱、文档转换等",
         linkText: "查看详情",
-        link: "https://memotrace.cn/tools/easybox/"
+        link: "https://github.com/LC044/EasyBox"
+        // link: "https://memotrace.cn/tools/easybox/"
       },
       {
         icon: "/icon/TraceBoard.png",
         title: "TraceBoard",
         desc: "统计键盘使用情况，可视化按键点击情况——记录打工人日常",
         linkText: "查看详情",
-        link: "https://memotrace.cn/tools/traceboard/"
+        link: "https://github.com/LC044/TraceBoard"
+        // link: "https://memotrace.cn/tools/traceboard/"
       },
       {
         icon: "/icon/PostgreSQL.svg",
@@ -68,13 +70,13 @@ const toolGroups = ref([
   {
     category: "入门学习",
     tools: [
-        {
-        icon: "/icon/Report.svg",
-        title: "AnnualReport",
-        desc: "微信年度聊天报告模板",
-        linkText: "查看详情",
-        link: "https://github.com/LC044/AnnualReport"
-      },
+    //     {
+    //     icon: "/icon/Report.svg",
+    //     title: "AnnualReport",
+    //     desc: "微信年度聊天报告模板",
+    //     linkText: "查看详情",
+    //     link: "https://github.com/LC044/AnnualReport"
+    //   },
       {
         icon: "/icon/ProMakr.png",
         title: "ProMakr 简记",
@@ -85,14 +87,14 @@ const toolGroups = ref([
       {
         icon: "/icon/社交聊天.svg",
         title: "DB_Chat",
-        desc: "使用pyqt开发模仿微信界面的聊天程序",
+        desc: "课程大作业——使用pyqt开发聊天程序",
         linkText: "查看详情",
         link: "https://github.com/LC044/DB_Chat"
       },
       {
         icon: "/icon/测试.svg",
         title: "MiniC",
-        desc: "MiniC语言编译器前端，生成抽象语法树，产生线性IR，生成控制流图",
+        desc: "课程大作业——MiniC语言编译器前端，生成抽象语法树，产生线性IR，生成控制流图",
         linkText: "查看详情",
         link: "https://github.com/LC044/MiniC"
       },
