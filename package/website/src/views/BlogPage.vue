@@ -78,7 +78,7 @@ const error = ref(null)      // 错误信息
 
 // 发起请求的函数
 const fetchData = async () => {
-  years.value = null
+  // years.value = null
   error.value = null
   loading.value = true
 

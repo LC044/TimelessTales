@@ -47,14 +47,39 @@
 </template>
 
 <script>
+import { ref,onMounted } from 'vue';
 import { useCounterStore } from '@/api/blog' // 导入Pinia Store
-
+import axios from 'axios'
 export default {
   name: 'SiteFooter',
   setup() {
     // 获取Store实例
     const counterStore = useCounterStore()
+    const fetchData = async () => {
+    try {
+      // 发起GET请求（使用之前配置的代理路径）
+      const response = await axios.get('/api/blog/public/viewer')
+      const status = response.data.statusCode
+      if (status !== 200) {
+        throw new Error(response.data.message || '请求失败，请稍后再试')
+      }
+      // 将结果存入响应式变量
+      const data = response.data.data
+      counterStore.setVisit(data.viewer)
+      counterStore.setVisitor(data.visited)
+      } catch (err) {
+        // 处理错误
+        console.error('请求错误:', err)
+      } finally {
+        // 结束加载状态
+      }
+    }
+
+    // 可选：组件挂载时自动请求
+    onMounted(fetchData)
     return { counterStore }
   }
 }
+
+
 </script>
