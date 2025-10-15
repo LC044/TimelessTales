@@ -3,20 +3,31 @@
     <!-- 外层循环：遍历分类 -->
     <div v-for="(group, groupIndex) in toolGroups" :key="groupIndex" class="mb-10">
       <!-- 分类标题 -->
-      <h2 class="text-2xl font-bold mb-4 text-gray-800">{{ group.category }}</h2>
-
-      <!-- 内层循环：遍历该分类下的工具卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <ToolCard
-          v-for="(tool, toolIndex) in group.tools"
-          :key="toolIndex"
-          :icon="tool.icon"
-          :title="tool.title"
-          :desc="tool.desc"
-          :linkText="tool.linkText"
-          :link="tool.link"
-        />
+      <div class="flex items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">{{ group.category }}</h2>
+        <button
+            class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded text-xl"
+            @click="toggleExpand(group)"
+            aria-label="切换展开状态"
+          >
+          <i class="mgc_down_line" v-if="group.isExpanded"></i>
+          <i class="mgc_left_line" v-if="!group.isExpanded"></i>
+        </button>
       </div>
+      <!-- 内层循环：遍历该分类下的工具卡片 -->
+      <transition name="expand">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" v-if="group.isExpanded">
+          <ToolCard
+            v-for="(tool, toolIndex) in group.tools"
+            :key="toolIndex"
+            :icon="tool.icon"
+            :title="tool.title"
+            :desc="tool.desc"
+            :linkText="tool.linkText"
+            :link="tool.link"
+          />
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -24,7 +35,12 @@
 <script setup>
 import { ref } from 'vue'
 import ToolCard from "../components/ToolCard.vue";
-
+// 声明默认展开状态常量
+const DEFAULT_EXPANDED = true;
+// 切换展开/折叠状态的方法
+const toggleExpand = (group) => {
+  group.isExpanded = !group.isExpanded;
+};
 // 按工具类型分组的数据
 const toolGroups = ref([
 //   {
@@ -41,6 +57,7 @@ const toolGroups = ref([
 //   },
   {
     category: "PC工具",
+    isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
     tools: [
       {
         icon: "/icon/EasyBox.png",
@@ -69,6 +86,7 @@ const toolGroups = ref([
   },
   {
     category: "入门学习",
+    isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
     tools: [
     //     {
     //     icon: "/icon/Report.svg",
@@ -110,6 +128,16 @@ const toolGroups = ref([
 ]);
 </script>
 
-<style scoped>
-/* 可选：美化分类标题 */
+<style>
+/* 展开折叠过渡动画 */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 </style>

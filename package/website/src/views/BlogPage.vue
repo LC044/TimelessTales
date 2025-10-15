@@ -1,23 +1,38 @@
 <template>
   <div class="max-w-3xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-1">时间线</h1>
-    <p class="text-center text-gray-500 mb-5">{{ category_num }} 分类 × {{ article_num }} 文章 × {{ tag_num }} 标签 × {{ word_num }} 字</p>
+    <p class="text-center text-gray-500 mb-5">
+      {{ category_num }} 分类 × {{ article_num }} 文章 × {{ tag_num }} 标签 × {{ word_num }} 字
+    </p>
     <div v-for="yearGroup in years" :key="yearGroup.year" class="mb-12">
       <div class="flex items-center mb-4">
         <h2 class="text-2xl font-semibold">{{ yearGroup.year }}</h2>
         <span class="ml-2 text-gray-500">{{ yearGroup.articles.length }} 篇</span>
-        <button class="ml-2 text-gray-400 hover:text-gray-600">+</button>
+        <!-- 缩小button点击区域 -->
+        <button
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded text-lg"
+          @click="toggleExpand(yearGroup)"
+          aria-label="切换展开状态"
+        >
+          <i class="mgc_down_line" v-if="yearGroup.isExpanded"></i>
+          <i class="mgc_left_line" v-if="!yearGroup.isExpanded"></i>
+        </button>
       </div>
-      <ul class="space-y-2">
-        <li v-for="(article, index) in yearGroup.articles" :key="index">
-          <a :href="article.link" class="block p-2 bg-light-bg transition-shadow border-b border-dashed border-gray-300 mt-2 hover:border-gray-800" target="_blank">
-            <span class="text-gray-400 mr-3">{{ article.date }}</span>
-            <span class="text-gray-800">{{ article.title }}</span>
-            <!-- 文章项下方的虚线 -->
-            <div class=""></div>
-          </a>
-        </li>
-      </ul>
+      <!-- 使用transition实现平滑展开折叠效果 -->
+      <transition name="expand">
+        <ul class="space-y-2" v-if="yearGroup.isExpanded">
+          <li v-for="(article, index) in yearGroup.articles" :key="index">
+            <a
+              :href="article.link"
+              class="block p-2 bg-gray-50 dark:bg-gray-800 transition-all border-b border-dashed border-gray-300 dark:border-gray-700 mt-2 hover:border-gray-800 dark:hover:border-gray-500 hover:shadow-sm" 
+              target="_blank"
+            >
+              <span class="text-gray-500 dark:text-gray-400 mr-3">{{ article.date }}</span>
+              <span class="text-gray-800 dark:text-gray-200">{{ article.title }}</span>
+            </a>
+          </li>
+        </ul>
+      </transition>
     </div>
   </div>
 </template>
@@ -30,11 +45,14 @@ const category_num = ref(6)
 const article_num = ref(21)
 const tag_num = ref(2)
 const word_num = ref(197220)
+// 声明默认展开状态常量
+const DEFAULT_EXPANDED = true;
 // 获取Store实例
 const counterStore = useCounterStore()
 const years = ref([
   {
     year: '2025',
+    isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
     articles: [
       { date: '09-29', title: 'TPCC测试方法—benchmarksql', link: 'https://blog.lc044.love/post/31' },
       { date: '09-04', title: '绿联NAS+Docker：解锁PaddleOCR高效文字识别新姿势', link: 'https://blog.lc044.love/post/30' },
@@ -75,6 +93,10 @@ const years = ref([
 const loading = ref(false)   // 加载状态
 const error = ref(null)      // 错误信息
 
+// 切换展开/折叠状态的方法
+const toggleExpand = (yearGroup) => {
+  yearGroup.isExpanded = !yearGroup.isExpanded;
+};
 
 // 发起请求的函数
 const fetchData = async () => {
@@ -105,6 +127,7 @@ const fetchData = async () => {
       const articles = data[yearStr]; // 当前年份的所有文章
       new_years.push({
         year: yearStr,
+        isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
         articles: articles
       })
       // 遍历当前年份的每篇文章
@@ -127,7 +150,7 @@ const fetchData = async () => {
     // 结束加载状态
     loading.value = false
   }
-    try {
+  try {
     // 发起GET请求（使用之前配置的代理路径）
     const response = await axios.get('/api/blog/public/meta')
     const status = response.data.statusCode
@@ -159,6 +182,16 @@ onMounted(fetchData)
 
 </script>
 
-<style scoped>
-/* 若需额外自定义样式可在此添加，Tailwind 已配置则主要靠工具类 */
+<style>
+/* 展开折叠过渡动画 */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 </style>
