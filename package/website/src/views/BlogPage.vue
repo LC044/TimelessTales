@@ -101,6 +101,7 @@ const toggleExpand = (yearGroup) => {
 // 发起请求的函数
 const fetchData = async () => {
   // years.value = null
+  if (loading.value) return // 防止重复请求
   error.value = null
   loading.value = true
 
