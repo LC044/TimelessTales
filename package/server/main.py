@@ -10,8 +10,12 @@
 """
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
+from dotenv import load_dotenv
+load_dotenv()
 
-from app import blog
+
+from app.blog import blog_router
+from app.github import github
 
 app = FastAPI()
 
@@ -36,7 +40,8 @@ app.add_middleware(
 async def get_users():
     return {"data": ["user1", "user2"]}
 
-app.include_router(blog.router, prefix="/api/blog", tags=["Users"])
+app.include_router(blog_router, prefix="/api/blog", tags=["Users"])
+app.include_router(github.router, prefix="/api/github", tags=["Users"])
 
 if __name__ == "__main__":
     import uvicorn

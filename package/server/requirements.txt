@@ -3,3 +3,7 @@ uvicorn
 python-dotenv
 requests
 pydantic
+apscheduler
+aiohttp
+sqlalchemy
+aiosqlite==0.21.0

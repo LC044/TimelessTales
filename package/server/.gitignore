@@ -242,3 +242,5 @@ cython_debug/
 .idea/
 .vscode
 test*
+
+*.db

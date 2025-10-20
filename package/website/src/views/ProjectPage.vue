@@ -175,7 +175,7 @@ import { ref, onMounted, computed } from 'vue'
 import ToolCard from "../components/ToolCard.vue";
 
 // 配置项
-const GITHUB_USERNAME = 'lc044' // GitHub用户名
+const GITHUB_USERNAME = 'LC044' // GitHub用户名
 const MAX_RECENT_REPOS = 4 // 最多显示的最近仓库数量
 
 // 状态管理
@@ -292,17 +292,18 @@ onMounted(async () => {
   errorMsg.value = ''
 
   // 1. 获取用户基本信息
-  const userData = await fetchGithubData(`https://api.github.com/users/${GITHUB_USERNAME}`)
-  if (!userData) {
+  // const userData = await fetchGithubData(`https://api.github.com/users/${GITHUB_USERNAME}`)
+  const data = await fetchGithubData(`/api/github/data`)
+  if (!data) {
     isLoading.value = false
     return
   }
-  userInfo.value = userData
+  userInfo.value = data.user_info
 
   // 2. 获取用户仓库列表（只获取公开仓库）
-  const reposData = await fetchGithubData(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`)
-  if (reposData) {
-    allRepos.value = reposData.filter(repo => !repo.fork) // 过滤掉fork的仓库
+  // const reposData = await fetchGithubData(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`)
+  if (data) {
+    allRepos.value = data.repos // 过滤掉fork的仓库
   }
 
   // 3. 获取贡献统计（GraphQL API）
