@@ -9,7 +9,7 @@
 @Description : 
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float, Boolean
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float, Boolean, desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -36,6 +36,27 @@ AsyncSessionLocal = sessionmaker(
 # 2. 基础模型类
 Base = declarative_base()
 
+class Repo(Base):
+    """GitHub仓库信息表"""
+    __tablename__ = "repo"
+
+    id = Column(Integer, primary_key=True, index=True)
+    github_repo_id = Column(Integer, unique=True, nullable=False)  # GitHub官方仓库ID（避免重复）
+    name = Column(String(100), nullable=False)  # 仓库名
+    description = Column(Text, nullable=True)  # 仓库描述
+    html_url = Column(String(255), nullable=False)  # 仓库URL
+    language = Column(String(50), nullable=True)  # 主要开发语言
+    stargazers_count = Column(Integer, default=0)  # 星标数
+    forks_count = Column(Integer, default=0)  # Fork数
+    updated_at = Column(String(50), nullable=False)  # GitHub更新时间（ISO格式）
+    pushed_at = Column(String(50), nullable=False)  # 仓库创建时间
+    created_at = Column(String(50), nullable=False) # 仓库创建时间
+    default_branch = Column(String(50), default="main")  # 默认分支
+    commit_count = Column(Integer, default=0)  # 默认分支commit总数
+    owner_id = Column(Integer, ForeignKey("user_info.id"), nullable=False)  # 关联用户表
+
+    # 关联：多个仓库属于一个用户
+    owner = relationship("UserInfo", back_populates="repos")
 
 # 3. 数据模型定义
 class UserInfo(Base):
@@ -55,30 +76,7 @@ class UserInfo(Base):
     updated_at = Column(DateTime, default=datetime.now)  # 数据更新时间
 
     # 关联：一个用户对应多个仓库
-    repos = relationship("Repo", back_populates="owner", cascade="all, delete-orphan")
-
-
-class Repo(Base):
-    """GitHub仓库信息表"""
-    __tablename__ = "repo"
-
-    id = Column(Integer, primary_key=True, index=True)
-    github_repo_id = Column(Integer, unique=True, nullable=False)  # GitHub官方仓库ID（避免重复）
-    name = Column(String(100), nullable=False)  # 仓库名
-    description = Column(Text, nullable=True)  # 仓库描述
-    html_url = Column(String(255), nullable=False)  # 仓库URL
-    language = Column(String(50), nullable=True)  # 主要开发语言
-    stargazers_count = Column(Integer, default=0)  # 星标数
-    forks_count = Column(Integer, default=0)  # Fork数
-    updated_at = Column(String(50), nullable=False)  # GitHub更新时间（ISO格式）
-    created_at = Column(String(50), nullable=False) # 仓库创建时间
-    default_branch = Column(String(50), default="main")  # 默认分支
-    commit_count = Column(Integer, default=0)  # 默认分支commit总数
-    owner_id = Column(Integer, ForeignKey("user_info.id"), nullable=False)  # 关联用户表
-
-    # 关联：多个仓库属于一个用户
-    owner = relationship("UserInfo", back_populates="repos")
-
+    repos = relationship("Repo", back_populates="owner", cascade="all, delete-orphan", order_by=desc(Repo.stargazers_count))
 
 class SyncStatus(Base):
     """同步状态表（记录每次同步结果，方便排查问题）"""

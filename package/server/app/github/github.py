@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,9 +53,22 @@ async def fetch_rest_api(session: aiohttp.ClientSession, url: str) -> dict:
         async with session.get(url, headers=get_github_headers(), timeout=15) as resp:
             if resp.status != 200:
                 raise Exception(f"HTTP {resp.status}: {await resp.text()}")
-            return await resp.json()
+
+            # ✅ 提取 Link 头
+            link_header = resp.headers.get("Link")
+            if link_header:
+                logger.debug(f"Link Header: {link_header}")
+
+            # 返回数据与分页信息
+            data = await resp.json()
+            return {
+                "data": data,
+                "link": link_header
+            }
+
     except Exception as e:
         logger.error(f"REST请求失败（{url}）: {str(e)}")
+        logger.error(traceback.format_exc())
         raise
 
 
@@ -87,12 +102,15 @@ async def sync_github_to_db(db: AsyncSession) -> None:
         async with aiohttp.ClientSession() as session:
             # 1. 拉取用户信息
             user_raw = await fetch_rest_api(session, f"{GITHUB_REST_API}/users/{GITHUB_USERNAME}")
-
+            if user_raw:
+                user_raw = user_raw['data']
             # 2. 拉取仓库列表（过滤fork）
             repos_raw = await fetch_rest_api(
                 session,
-                f"{GITHUB_REST_API}/users/{GITHUB_USERNAME}/repos?sort=updated&per_page=100"
+                f"{GITHUB_REST_API}/users/{GITHUB_USERNAME}/repos?sort=pushed&per_page=100"
             )
+            if repos_raw:
+                repos_raw = repos_raw['data']
             repos_raw = [repo for repo in repos_raw if not repo.get("fork", False)]
 
             # 3. 批量拉取仓库commit数（并发提高效率）
@@ -102,7 +120,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
                 default_branch = repo.get("default_branch", "main")
                 task = fetch_rest_api(
                     session,
-                    f"{GITHUB_REST_API}/repos/{repo_full_name}/commits?sha={default_branch}&per_page=1"
+                    f"{GITHUB_REST_API}/repos/{repo_full_name}/commits?sha={default_branch}&per_page=1&author={GITHUB_USERNAME}"
                 )
                 repo_commit_tasks.append((repo, task))
 
@@ -113,7 +131,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
                 try:
                     commit_resp = await task
                     # 从Link头获取总commit数
-                    link_header = commit_resp.get("Link", "") or task._response.headers.get("Link", "")
+                    link_header = commit_resp['link']
                     commit_count = 0
                     if 'rel="last"' in link_header:
                         last_page = link_header.split("page=")[-1].split(">")[0]
@@ -121,6 +139,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
                     elif commit_resp:
                         commit_count = 1
                 except Exception:
+                    logger.info(traceback.format_exc())
                     commit_count = 0
 
                 total_commits += commit_count
@@ -134,6 +153,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
                     "forks_count": repo["forks_count"],
                     "updated_at": repo["updated_at"],
                     "created_at": repo["created_at"],
+                    "pushed_at": repo["pushed_at"],
                     "default_branch": repo.get("default_branch", "main"),
                     "commit_count": commit_count
                 })
@@ -198,6 +218,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
                     forks_count=repo["forks_count"],
                     updated_at=repo["updated_at"],
                     created_at=repo["created_at"],
+                    pushed_at=repo["pushed_at"],
                     default_branch=repo["default_branch"],
                     commit_count=repo["commit_count"],
                     owner_id=new_user.id  # 关联用户
@@ -216,6 +237,7 @@ async def sync_github_to_db(db: AsyncSession) -> None:
         sync_status.status = "failed"
         sync_status.message = str(e)
         logger.error(f"同步失败: {str(e)}")
+        logger.error(traceback.format_exc())
 
     # 提交事务（无论成功失败，都记录同步状态）
     db.add(sync_status)
@@ -322,6 +344,7 @@ async def get_github_data(db: AsyncSession = Depends(get_db)):
                 "forks_count": repo.forks_count,
                 "updated_at": repo.updated_at,
                 "created_at": repo.created_at,
+                "pushed_at": repo.pushed_at,
                 "default_branch": repo.default_branch,
                 "commit_count": repo.commit_count
             }

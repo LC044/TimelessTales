@@ -9,7 +9,7 @@ COPY ./package.json ./
 # 复制项目文件
 COPY . .
 RUN corepack enable
-# RUN npm install -g pnpm
+RUN npm install -g pnpm --force
 # RUN corepack prepare pnpm@10.18.3 --activate
 RUN pnpm config set network-timeout 600000 -g
 RUN pnpm config set registry https://registry.npmmirror.com -g

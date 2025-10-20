@@ -84,27 +84,27 @@
             <div class="text-gray-500">总仓库数</div>
           </div>
           <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-yellow-500 mb-1">{{ totalStars }}</div>
+            <div class="text-4xl font-bold text-yellow-500 mb-1">{{ totalStars.toLocaleString() }}</div>
             <div class="text-gray-500">累计星标</div>
           </div>
           <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-green-600 mb-1">{{ totalForks }}</div>
+            <div class="text-4xl font-bold text-green-600 mb-1">{{ totalForks.toLocaleString() }}</div>
             <div class="text-gray-500">累计分支</div>
           </div>
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
+          <!-- <div class="bg-white p-5 rounded-lg shadow-sm text-center">
             <div class="text-4xl font-bold text-purple-600 mb-1">{{ userInfo.public_gists }}</div>
             <div class="text-gray-500">Gists数量</div>
-          </div>
+          </div> -->
           <!-- 新增：总 commit 次数 -->
           <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-orange-500 mb-1">{{ totalCommits }}</div>
+            <div class="text-4xl font-bold text-orange-500 mb-1">{{ totalCommits.toLocaleString() }}</div>
             <div class="text-gray-500">总 commit 数</div>
           </div>
           <!-- 新增：最近一年提交次数 -->
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
+          <!-- <div class="bg-white p-5 rounded-lg shadow-sm text-center">
             <div class="text-4xl font-bold text-purple-500 mb-1">{{ yearlyCommits }}</div>
             <div class="text-gray-500">近一年提交</div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -176,7 +176,7 @@ import ToolCard from "../components/ToolCard.vue";
 
 // 配置项
 const GITHUB_USERNAME = 'LC044' // GitHub用户名
-const MAX_RECENT_REPOS = 4 // 最多显示的最近仓库数量
+const MAX_RECENT_REPOS = 6 // 最多显示的最近仓库数量
 
 // 状态管理
 const userInfo = ref({}) // 用户基本信息
@@ -202,7 +202,7 @@ const totalForks = computed(() => {
 // 计算属性：最近活跃仓库（按更新时间排序）
 const recentRepos = computed(() => {
   return [...allRepos.value]
-    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+    .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
     .slice(0, MAX_RECENT_REPOS)
 })
 
@@ -210,7 +210,7 @@ const recentRepos = computed(() => {
 const totalCommits = computed(() => {
   return allRepos.value.reduce((sum, repo) => {
     // 仓库默认分支的 commit 总数（需仓库有默认分支且公开）
-    return sum + (repo.defaultBranchRef?.target?.history?.totalCount || 0)
+    return sum + (repo.commit_count || 0)
   }, 0)
 })
 

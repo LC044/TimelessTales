@@ -10,9 +10,12 @@
 """
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
+import os
 from dotenv import load_dotenv
-load_dotenv()
 
+if not os.path.exists('./data'):
+    os.mkdir('./data')
+load_dotenv()
 
 from app.blog import blog_router
 from app.github import github
@@ -45,4 +48,5 @@ app.include_router(github.router, prefix="/api/github", tags=["Users"])
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    image: timelesstales-backend
+    restart: always           # 容器退出时自动重启
+    expose:
+      - "8000"                # 仅内部暴露端口（不直接映射到主机）
+    networks:
+      - app-network           # 加入自定义网络
+    environment:
+      - TZ=Asia/Shanghai
+      - BLOG_URL=''
+      - BLOG_TOKEN=''
+      - SIYUAN_TOKEN=''
+      - GITHUB_TOKEN=''
+
+  # 前端服务
+  frontend:
+    image: timelesstales-frontend
+    restart: always
+    ports:
+      - "8081:80"               # 前端端口映射（主机8081端口 -> 容器80端口）
+    depends_on:
+      - backend               # 前端依赖后端服务启动
+    networks:
+      - app-network
+# 自定义网络（让前后端容器互通）
+networks:
+  app-network:
+    driver: bridge
