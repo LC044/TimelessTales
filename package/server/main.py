@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 if not os.path.exists('./data'):
     os.mkdir('./data')
-load_dotenv()
+load_dotenv('./data/.env')
 
 from app.blog import blog_router
 from app.github import github

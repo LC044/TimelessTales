@@ -18,9 +18,9 @@
         <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
           <!-- 头像 -->
           <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100">
-            <img 
-              :src="userInfo.avatar_url" 
-              :alt="`${userInfo.login}的GitHub头像`" 
+            <img
+              :src="userInfo.avatar_url"
+              :alt="`${userInfo.login}的GitHub头像`"
               class="w-full h-full object-cover"
             >
           </div>
@@ -68,7 +68,7 @@
         </div>
         <div class="bg-white p-4 rounded-lg shadow-sm">
           <img 
-            :src="`https://ghchart.rshah.org/${currentColor.replace('#', '')}/${userInfo.login}`" 
+            :src="`https://ghchart.rshah.org/${currentColor.replace('#', '')}/${userInfo.login}`"
             alt="GitHub贡献日历"
             class="w-full h-auto rounded"
           >
@@ -133,7 +133,7 @@
             <div class="flex items-center text-sm text-gray-500 gap-4">
               <span class="flex items-center"><i class="mgc_star_line mr-1"></i> {{ repo.stargazers_count }}</span>
               <span class="flex items-center"><i class="mgc_fork_line mr-1"></i> {{ repo.forks_count }}</span>
-              <span class="flex items-center"><i class="mgc_time_line mr-1"></i> 
+              <span class="flex items-center"><i class="mgc_time_line mr-1"></i>
                 {{ formatDate(repo.created_at) }}
               </span>
             </div>
@@ -329,14 +329,14 @@ const toolGroups = ref([
         title: "EasyBox",
         desc: "PC 端通用工具合集软件，致力于打造一款生活、工作、学习、娱乐等多方面功能集合的软件，有PDF工具箱、图片工具箱、文档转换等",
         linkText: "查看详情",
-        link: "https://github.com/LC044/EasyBox"
+        link: "https://blog.lc044.love/post/32"
       },
       {
         icon: "/icon/TraceBoard.png",
         title: "TraceBoard",
         desc: "统计键盘使用情况，可视化按键点击情况——记录打工人日常",
         linkText: "查看详情",
-        link: "https://github.com/LC044/TraceBoard"
+        link: "https://blog.lc044.love/post/33"
       },
       {
         icon: "/icon/PostgreSQL.svg",

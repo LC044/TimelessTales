@@ -97,6 +97,9 @@ async def fetch_graphql_api(session: aiohttp.ClientSession, query: str) -> dict:
 # ------------------------------
 async def sync_github_to_db(db: AsyncSession) -> None:
     """从GitHub拉取数据，写入/更新数据库"""
+    if not GITHUB_USERNAME:
+        logger.error(f'GITHUB_USERNAME缺失，请设置环境变量GITHUB_USERNAME为你的GitHub用户名')
+        return
     sync_status = SyncStatus(sync_time=datetime.now(), status="processing")
     try:
         async with aiohttp.ClientSession() as session:

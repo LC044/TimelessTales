@@ -9,6 +9,8 @@ services:
       - "8000"                # 仅内部暴露端口（不直接映射到主机）
     networks:
       - app-network           # 加入自定义网络
+    volumes:
+      - ./package/server/data:/app/data  # 主机当前目录的data → 容器内/app/data
 
   # 前端服务
   frontend:
