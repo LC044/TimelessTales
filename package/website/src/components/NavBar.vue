@@ -7,17 +7,20 @@
             <h1 class="site-title">拾光物语</h1>
         </div>
         <nav class="nav-bg bg-light-bg shadow-md rounded-full px-4 py-1 flex justify-center space-x-2 fixed left-1/2 transform -translate-x-1/2">
-                <RouterLink 
-                v-for="(item, index) in navLinks" 
-                :key="index" 
-                :to="item.href"
-                class="relative px-1 py-1 bg-blue text-light-text3 hover:text-accent-fresh-mint"
-                active-class="transition ease-in-out text-accent-fresh-mint"
-                >
-                {{ item.label }}
-                <span v-if="$route.href === item.href" class="absolute bottom-0 left-0 w-full h-0.5 bg-accent-fresh-mint"></span>
-                </RouterLink>
-
+            <RouterLink
+            v-for="(item, index) in navLinks"
+            :key="index"
+            :to="item.href"
+            class="relative px-1 py-1 bg-blue text-light-text3 hover:text-accent-fresh-mint"
+            active-class="transition ease-in-out text-accent-fresh-mint"
+            >
+            {{ item.label }}
+            <!-- route.href等于item.href 或者 $route.href 包含 item.href -->
+            <span
+            v-if="$route.href === item.href || ($route.path.startsWith(item.href)&& item.href !== '/')"
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-accent-fresh-mint"
+            ></span>
+            </RouterLink>
         </nav>
     </header>
   </template>
@@ -30,9 +33,8 @@
     { label: '首页', href: '/' },
     { label: '文档', href: '/blog' },
     { label: '项目', href: '/project' },
-    { label: '图库', href: '/more' },
-    { label: '历史', href: '/more' },
-    { label: '更多', href: '/more' }
+    { label: '工具', href: '/tools' },
+    { label: '更多', href: '/more' },
   ]
 </script>
   

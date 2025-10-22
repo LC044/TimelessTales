@@ -1,7 +1,7 @@
 <template>
   <!-- 顶部导航 -->
   <NavBar />
-  <div class="container">
+  <div class="container-main">
     <transition name="fade-slide" mode="out-in">
       <RouterView />
     </transition>
@@ -16,8 +16,9 @@ import HomePage from './views/HomePage.vue'
 </script>
 
 <style>
-.container{
+.container-main{
   max-width: 100vw;
+  width: 100%;
 }
 /* 进入时动画 */
 .fade-slide-enter-active {

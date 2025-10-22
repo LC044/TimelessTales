@@ -6,6 +6,8 @@ import HomePage from '@/views/HomePage.vue';
 import BlogPage from '@/views/BlogPage.vue';
 import More from '@/views/More.vue';
 import ProjectPage from '@/views/ProjectPage.vue';
+import Responsive from '@/views/tools/Responsive.vue';
+import ToolPage from '@/views/tools/ToolPage.vue';
 // import ThoughtPage from '@/views/ThoughtPage.vue';
 
 const routes = [
@@ -13,7 +15,8 @@ const routes = [
   { path: '/blog', component: BlogPage },
   { path: '/more', component: More },
   { path: '/project', component: ProjectPage },
-//   { path: '/thought', component: ThoughtPage },
+  { path: '/tools', component: ToolPage },
+  { path: '/tools/responsive', component: Responsive },
 ];
 
 const router = createRouter({
