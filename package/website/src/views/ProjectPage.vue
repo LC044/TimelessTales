@@ -1,23 +1,23 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
     <!-- 加载状态 -->
     <div v-if="isLoading" class="text-center py-10">
-      <div class="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-      <p class="mt-3 text-gray-600">加载 GitHub 数据中...</p>
+      <div class="inline-block w-10 h-10 border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 rounded-full animate-spin"></div>
+      <p class="mt-3 text-gray-600 dark:text-gray-300">加载 GitHub 数据中...</p>
     </div>
 
     <!-- 错误提示 -->
-    <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+    <div v-if="errorMsg" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
       <p>{{ errorMsg }}</p>
     </div>
 
     <!-- 内容区域（加载完成且无错误时显示） -->
     <template v-else>
       <!-- 1. GitHub 用户基本信息区 -->
-      <div class="mb-10 bg-white p-6 rounded-lg shadow-sm">
+      <div class="mb-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-gray-900/50 transition-all duration-300">
         <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
           <!-- 头像 -->
-          <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100">
+          <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700">
             <img
               :src="userInfo.avatar_url"
               :alt="`${userInfo.login}的GitHub头像`"
@@ -26,18 +26,18 @@
           </div>
           <!-- 基本信息 -->
           <div class="flex-1 text-center md:text-left">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ userInfo.name || userInfo.login }}</h1>
-            <p class="text-gray-600 mb-4 max-w-2xl" v-if="userInfo.bio">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ userInfo.name || userInfo.login }}</h1>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 max-w-2xl" v-if="userInfo.bio">
               {{ userInfo.bio }}
             </p>
             <div class="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
-              <a :href="userInfo.html_url" target="_blank" class="flex items-center text-gray-500 hover:text-blue-600 transition-colors">
+              <a :href="userInfo.html_url" target="_blank" class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 <i class="mgc_github_line mr-1"></i> GitHub主页
               </a>
-              <span v-if="userInfo.location" class="flex items-center text-gray-500">
+              <span v-if="userInfo.location" class="flex items-center text-gray-500 dark:text-gray-400">
                 <i class="mgc_map_pin_line mr-1"></i> {{ userInfo.location }}
               </span>
-              <a v-if="userInfo.blog" :href="userInfo.blog" target="_blank" class="flex items-center text-gray-500 hover:text-blue-600 transition-colors">
+              <a v-if="userInfo.blog" :href="userInfo.blog" target="_blank" class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 <i class="mgc_link_line mr-1"></i> 个人网站
               </a>
             </div>
@@ -48,89 +48,80 @@
       <!-- 2. 贡献日历及主题控制区 -->
       <div class="mb-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">GitHub 贡献日历</h2>
+          <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 sm:mb-0">GitHub 贡献日历</h2>
           <div class="flex items-center gap-3">
             <div class="flex gap-2">
               <button
                 v-for="color in presetColors"
                 :key="color"
                 :style="{ backgroundColor: color }"
-                class="w-6 h-6 rounded-full cursor-pointer transition-transform hover:scale-110"
+                class="w-6 h-6 rounded-full cursor-pointer transition-transform hover:scale-110 border border-gray-200 dark:border-gray-700"
                 :title="color"
                 @click="currentColor = color"
               ></button>
             </div>
             <div class="flex items-center gap-2">
-              <input type="color" v-model="currentColor" class="w-8 h-8 p-0 border-0 cursor-pointer">
-              <input type="text" v-model="currentColor" class="w-24 px-2 py-1 text-sm border border-gray-300 rounded">
+              <input type="color" v-model="currentColor" class="w-8 h-8 p-0 border-0 cursor-pointer rounded">
+              <input type="text" v-model="currentColor" class="w-24 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
             </div>
           </div>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-gray-900/50">
           <img 
             :src="`https://ghchart.rshah.org/${currentColor.replace('#', '')}/${userInfo.login}`"
             alt="GitHub贡献日历"
-            class="w-full h-auto rounded"
+            class="w-full h-auto rounded dark:opacity-90"
           >
         </div>
       </div>
 
       <!-- 3. 核心数据统计区 -->
       <div class="mb-10">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">GitHub 数据统计</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">GitHub 数据统计</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-blue-600 mb-1">{{ userInfo.public_repos }}</div>
-            <div class="text-gray-500">总仓库数</div>
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm dark:shadow-gray-900/50 text-center transition-all duration-300">
+            <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ userInfo.public_repos }}</div>
+            <div class="text-gray-500 dark:text-gray-400">总仓库数</div>
           </div>
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-yellow-500 mb-1">{{ totalStars.toLocaleString() }}</div>
-            <div class="text-gray-500">累计星标</div>
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm dark:shadow-gray-900/50 text-center transition-all duration-300">
+            <div class="text-4xl font-bold text-yellow-500 dark:text-yellow-400 mb-1">{{ totalStars.toLocaleString() }}</div>
+            <div class="text-gray-500 dark:text-gray-400">累计星标</div>
           </div>
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-green-600 mb-1">{{ totalForks.toLocaleString() }}</div>
-            <div class="text-gray-500">累计分支</div>
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm dark:shadow-gray-900/50 text-center transition-all duration-300">
+            <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-1">{{ totalForks.toLocaleString() }}</div>
+            <div class="text-gray-500 dark:text-gray-400">累计分支</div>
           </div>
-          <!-- <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-purple-600 mb-1">{{ userInfo.public_gists }}</div>
-            <div class="text-gray-500">Gists数量</div>
-          </div> -->
           <!-- 新增：总 commit 次数 -->
-          <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-orange-500 mb-1">{{ totalCommits.toLocaleString() }}</div>
-            <div class="text-gray-500">总 commit 数</div>
+          <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm dark:shadow-gray-900/50 text-center transition-all duration-300">
+            <div class="text-4xl font-bold text-orange-500 dark:text-orange-400 mb-1">{{ totalCommits.toLocaleString() }}</div>
+            <div class="text-gray-500 dark:text-gray-400">总 commit 数</div>
           </div>
-          <!-- 新增：最近一年提交次数 -->
-          <!-- <div class="bg-white p-5 rounded-lg shadow-sm text-center">
-            <div class="text-4xl font-bold text-purple-500 mb-1">{{ yearlyCommits }}</div>
-            <div class="text-gray-500">近一年提交</div>
-          </div> -->
         </div>
       </div>
 
       <!-- 4. 最近活跃仓库 -->
       <div class="mb-10">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">最近活跃仓库</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">最近活跃仓库</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div
             v-for="repo in recentRepos"
             :key="repo.id"
-            class="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm dark:shadow-gray-900/50 hover:shadow-md dark:hover:shadow-gray-700/30 transition-all duration-300"
           >
             <div class="flex justify-between items-start mb-2">
-              <h3 class="text-xl font-semibold text-gray-900">
-                <a :href="repo.html_url" target="_blank" class="hover:text-blue-600 transition-colors">
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                <a :href="repo.html_url" target="_blank" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   {{ repo.name }}
                 </a>
               </h3>
-              <span v-if="repo.language" class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+              <span v-if="repo.language" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-full">
                 {{ repo.language }}
               </span>
             </div>
-            <p class="text-gray-600 text-sm mb-3" v-if="repo.description">
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3" v-if="repo.description">
               {{ repo.description }}
             </p>
-            <div class="flex items-center text-sm text-gray-500 gap-4">
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 gap-4">
               <span class="flex items-center"><i class="mgc_star_line mr-1"></i> {{ repo.stargazers_count }}</span>
               <span class="flex items-center"><i class="mgc_fork_line mr-1"></i> {{ repo.forks_count }}</span>
               <span class="flex items-center"><i class="mgc_time_line mr-1"></i>
@@ -141,32 +132,33 @@
         </div>
       </div>
     </template>
+
     <!-- 5. 原有工具组内容 -->
-      <div v-for="(group, groupIndex) in toolGroups" :key="groupIndex" class="mb-10">
-        <div class="flex items-center mb-4">
-          <h2 class="text-2xl font-bold text-gray-800">{{ group.category }}</h2>
-          <button
-            class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded text-xl ml-2"
-            @click="toggleExpand(group)"
-          >
-            <i class="mgc_down_line" v-if="group.isExpanded"></i>
-            <i class="mgc_left_line" v-if="!group.isExpanded"></i>
-          </button>
-        </div>
-        <transition name="expand">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6" v-if="group.isExpanded">
-            <ToolCard
-              v-for="(tool, toolIndex) in group.tools"
-              :key="toolIndex"
-              :icon="tool.icon"
-              :title="tool.title"
-              :desc="tool.desc"
-              :linkText="tool.linkText"
-              :link="tool.link"
-            />
-          </div>
-        </transition>
+    <div v-for="(group, groupIndex) in toolGroups" :key="groupIndex" class="mb-10">
+      <div class="flex items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ group.category }}</h2>
+        <button
+          class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded text-xl ml-2"
+          @click="toggleExpand(group)"
+        >
+          <i class="mgc_down_line" v-if="group.isExpanded"></i>
+          <i class="mgc_left_line" v-if="!group.isExpanded"></i>
+        </button>
       </div>
+      <transition name="expand">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" v-if="group.isExpanded">
+          <ToolCard
+            v-for="(tool, toolIndex) in group.tools"
+            :key="toolIndex"
+            :icon="tool.icon"
+            :title="tool.title"
+            :desc="tool.desc"
+            :linkText="tool.linkText"
+            :link="tool.link"
+          />
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 

@@ -17,7 +17,8 @@ from typing import Optional, Dict, Any
 from starlette.responses import JSONResponse
 import os
 
-blog_url = os.getenv('BLOG_URL', 'http://localhost:8088')
+blog_api = os.getenv('BLOG_API', 'http://localhost:8088')
+blog_url = os.getenv('BLOG_URL', '')
 # print(blog_url)
 router = APIRouter()
 
@@ -32,13 +33,22 @@ async def get_timeline():
     """从a.com/api/public/timeline获取数据并返回给客户端"""
     try:
         # 目标API地址
-        target_url = f'{blog_url}/api/public/timeline'
+        target_url = f'{blog_api}/api/public/timeline'
         # 发送请求到目标API
         response = requests.get(target_url, timeout=10)
         # 检查请求是否成功
         response.raise_for_status()
         # 返回获取到的数据
-        return JSONResponse(content=response.json(), status_code=response.status_code)
+        timeline_data = response.json()
+        if timeline_data['data']:
+            articles_dic = timeline_data['data']
+            for year,articles in articles_dic.items():
+                for article in articles:
+                    if article.get('pathname'):
+                        article['link'] = f'{blog_url.rstrip('/')}/post/{article.get('pathname')}'
+                    else:
+                        article['link'] = f'{blog_url.rstrip('/')}/post/{article.get('id')}'
+        return JSONResponse(content=timeline_data, status_code=response.status_code)
     except requests.exceptions.RequestException as e:
         # 处理请求相关的异常
         raise HTTPException(
@@ -55,7 +65,7 @@ async def get_timeline():
 @router.get("/meta", response_model=TimelineResponse)
 async def get_meta():
     try:
-        target_url =  f'{blog_url}/api/public/meta'
+        target_url =  f'{blog_api}/api/public/meta'
         response = requests.get(target_url, timeout=10)
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=response.status_code)
@@ -74,7 +84,7 @@ async def get_meta():
 async def get_viewer():
     try:
         # 目标API地址
-        target_url =  f'{blog_url}/api/public/viewer'
+        target_url =  f'{blog_api}/api/public/viewer'
         # 发送请求到目标API
         response = requests.get(target_url, timeout=10)
         # 检查请求是否成功
@@ -99,7 +109,7 @@ async def get_viewer():
 async def get_article(article_id:int):
     try:
         # 目标API地址
-        target_url = f'{blog_url}/api/public/article/{article_id}'
+        target_url = f'{blog_api}/api/public/article/{article_id}'
         # 发送请求到目标API
         response = requests.get(target_url, timeout=10)
         # 检查请求是否成功

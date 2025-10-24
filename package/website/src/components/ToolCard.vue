@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-light-bg1 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow hover:bg-dark-warm-gray">
+  <div class="tool-card group bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 h-full transform group-hover:-translate-y-1">
     <!-- 卡片图标区 -->
     <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mb-4">
       <!-- <span class="text-2xl font-bold text-red-800">{{ icon }}</span> -->
@@ -27,3 +27,17 @@ const props = defineProps({
     link:String
 });
 </script>
+
+<style scoped>
+/* 自定义动画和过渡 */
+.tool-card {
+  @apply block;
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+</style>
+

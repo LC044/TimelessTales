@@ -33,9 +33,9 @@
             <!-- 工具网格 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               <template v-for="(tool, toolIndex) in category.tools" :key="toolIndex">
-                <a 
-                  :href="tool.url" 
-                  target="_blank" 
+                <a
+                  :href="tool.url"
+                  target="_blank"
                   rel="noopener noreferrer"
                   class="tool-card group"
                 >
@@ -61,14 +61,6 @@
         </template>
       </div>
     </main>
-
-    <!-- 页脚 -->
-    <footer class="mt-16 py-8 border-t border-gray-200 dark:border-gray-700">
-      <div class="container mx-auto px-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-        <p>工具导航中心 &copy; {{ new Date().getFullYear() }}</p>
-        <p class="mt-2">精心整理的实用工具集合</p>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -76,20 +68,20 @@
 import { ref, computed, onMounted } from 'vue';
 
 // 深色模式切换
-const isDarkMode = ref(false);
+// const isDarkMode = ref(false);
 
-onMounted(() => {
-  // 检查用户偏好
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    isDarkMode.value = true;
-    document.documentElement.classList.add('dark');
-  }
-});
+// onMounted(() => {
+//   // 检查用户偏好
+//   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+//     isDarkMode.value = true;
+//     document.documentElement.classList.add('dark');
+//   }
+// });
 
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark');
-};
+// const toggleDarkMode = () => {
+//   isDarkMode.value = !isDarkMode.value;
+//   document.documentElement.classList.toggle('dark');
+// };
 
 // 搜索功能
 const searchQuery = ref('');

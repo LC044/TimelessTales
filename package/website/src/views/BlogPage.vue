@@ -133,12 +133,12 @@ const fetchData = async () => {
       })
       // 遍历当前年份的每篇文章
       articles.forEach((article, index) => {
-        const pathname = article.pathname
-        if (pathname!=''){
-          article.link = `https://blog.lc044.love/post/${pathname}`
-        }else{
-          article.link = `https://blog.lc044.love/post/${article.id}`
-        }
+        // const pathname = article.pathname
+        // if (pathname!=''){
+        //   article.link = `https://blog.lc044.love/post/${pathname}`
+        // }else{
+        //   article.link = `https://blog.lc044.love/post/${article.id}`
+        // }
         article.date = article.createdAt.slice(5, 10)
       });
   });
