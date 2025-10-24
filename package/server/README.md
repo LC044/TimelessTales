@@ -6,6 +6,7 @@
 
 ```text
 BLOG_URL=http://localhost:8088
+BLOG_API=http://localhost:8088
 BLOG_TOKEN=
 SIYUAN_TOKEN=
 GITHUB_USERNAME=
@@ -13,7 +14,8 @@ GITHUB_TOKEN=
 ```
 
 参数说明：
-- BLOG_URL: VanBlog地址，[部署方式](https://vanblog.mereith.com/)
+- BLOG_URL: VanBlog地址，[部署方式](https://vanblog.mereith.com/)（推荐使用域名，外部可见）
+- BLOG_API: VanBlog的api地址，（推荐使用内网地址，仅内部使用）
 - BLOG_TOKEN: VanBlog的API token，[获取方式](https://vanblog.mereith.com/advanced/token.html)
 - SIYUAN_TOKEN: 思源笔记的token
 - GITHUB_USERNAME: GitHub的用户名

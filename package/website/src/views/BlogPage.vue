@@ -1,13 +1,13 @@
 <template>
   <div class="max-w-3xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-1">时间线</h1>
-    <p class="text-center text-gray-500 mb-5">
+    <p class="text-center text-gray-500 dark:text-gray-400 mb-5">
       {{ category_num }} 分类 × {{ article_num }} 文章 × {{ tag_num }} 标签 × {{ word_num }} 字
     </p>
     <div v-for="yearGroup in years" :key="yearGroup.year" class="mb-12">
       <div class="flex items-center mb-4">
         <h2 class="text-2xl font-semibold">{{ yearGroup.year }}</h2>
-        <span class="ml-2 text-gray-500">{{ yearGroup.articles.length }} 篇</span>
+        <span class="ml-2 text-gray-500 dark:text-gray-400">{{ yearGroup.articles.length }} 篇</span>
         <!-- 缩小button点击区域 -->
         <button
           class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded text-lg"
@@ -24,7 +24,7 @@
           <li v-for="(article, index) in yearGroup.articles" :key="index">
             <a
               :href="article.link"
-              class="block p-2 bg-gray-50 dark:bg-gray-800 transition-all border-b border-dashed border-gray-300 dark:border-gray-700 mt-2 hover:border-gray-800 dark:hover:border-gray-500 hover:shadow-sm" 
+              class="block p-2 bg-gray-50 dark:bg-gray-900 transition-all border-b border-dashed border-gray-300 dark:border-gray-700 mt-2 hover:border-gray-800 dark:hover:border-gray-500 hover:shadow-sm" 
               target="_blank"
             >
               <span class="text-gray-500 dark:text-gray-400 mr-3">{{ article.date }}</span>
@@ -139,7 +139,9 @@ const fetchData = async () => {
         // }else{
         //   article.link = `https://blog.lc044.love/post/${article.id}`
         // }
-        article.date = article.createdAt.slice(5, 10)
+        // 2025-10-24T16:31:03.078Z，转成时区时间 MM-DD 格式
+        const utcDate = new Date(article.createdAt);
+        article.date = `${String(utcDate.getMonth() + 1).padStart(2, '0')}-${String(utcDate.getDate()).padStart(2, '0')}`;
       });
   });
     years.value = new_years
