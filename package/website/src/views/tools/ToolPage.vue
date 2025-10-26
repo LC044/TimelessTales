@@ -67,22 +67,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 
-// 深色模式切换
-// const isDarkMode = ref(false);
-
-// onMounted(() => {
-//   // 检查用户偏好
-//   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-//     isDarkMode.value = true;
-//     document.documentElement.classList.add('dark');
-//   }
-// });
-
-// const toggleDarkMode = () => {
-//   isDarkMode.value = !isDarkMode.value;
-//   document.documentElement.classList.toggle('dark');
-// };
-
 // 搜索功能
 const searchQuery = ref('');
 
@@ -95,7 +79,7 @@ const toolCategories = ref([
       {
         name: "多合一网页缩略图",
         icon: "mgc_web_line",
-        description: "PC 端、手机端、pad 端、移动端 四合一网站响应式截图生成，网站预览缩略图生成",
+        description: "PC、手机、pad、笔记本端四合一网站响应式截图生成，网站预览缩略图生成",
         url: "/tools/responsive"
       },
       {

@@ -3,14 +3,15 @@
   <footer class="bg-gray-50 border-t border-gray-200 py-6 dark:bg-gray-900 dark:border-gray-800">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center">
-        <!-- 版权信息：深色模式下文字改为浅灰色 -->
         <div class="mb-4 md:mb-0">
           <p class="text-sm text-gray-500 dark:text-gray-400">
             © 2023-2025 SiYuan.
+            <a href="https://github.com/LC044/TimelessTales" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 dark:hover:text-blue-400">
+            本站源码
+            </a>
           </p>
         </div>
 
-        <!-- 访问统计：深色模式下文字改为浅灰色 -->
         <div class="mb-4 md:mb-0 text-center md:text-left">
           <p class="text-sm text-gray-500 dark:text-gray-400">
             <i class="mgc_user_3_line"></i> {{ counterStore.visitorCount.toLocaleString() }} | 
@@ -18,13 +19,12 @@
           </p>
         </div>
 
-        <!-- 备案信息：深色模式下文字改为浅灰， hover 色改为亮蓝 -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-1">
           <a
             href="https://beian.miit.gov.cn/"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 flex items-center"
+            class="text-sm text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 flex items-center"
           >
             <span>陕ICP备2023017789号</span>
           </a>
@@ -32,11 +32,11 @@
             href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61019002002696"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 flex items-center"
+            class="text-sm text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 flex items-center"
           >
-            <img src="https://img.alicdn.com/tfs/TB1X1Idn.Y1gK0jSZTEXXXDQVXa-200-200.png"
+            <!-- <img src="https://img.alicdn.com/tfs/TB1X1Idn.Y1gK0jSZTEXXXDQVXa-200-200.png"
                 alt="公安备案图标"
-                class="h-4 w-4 mr-1">
+                class="h-4 w-4 mr-1"> -->
             <span>陕公网安备61019002002696号</span>
           </a>
         </div>

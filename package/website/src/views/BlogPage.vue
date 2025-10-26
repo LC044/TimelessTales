@@ -133,12 +133,6 @@ const fetchData = async () => {
       })
       // 遍历当前年份的每篇文章
       articles.forEach((article, index) => {
-        // const pathname = article.pathname
-        // if (pathname!=''){
-        //   article.link = `https://blog.lc044.love/post/${pathname}`
-        // }else{
-        //   article.link = `https://blog.lc044.love/post/${article.id}`
-        // }
         // 2025-10-24T16:31:03.078Z，转成时区时间 MM-DD 格式
         const utcDate = new Date(article.createdAt);
         article.date = `${String(utcDate.getMonth() + 1).padStart(2, '0')}-${String(utcDate.getDate()).padStart(2, '0')}`;
