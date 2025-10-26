@@ -4,6 +4,7 @@ services:
   # 后端服务
   backend:
     build: ./package/server          # 后端Dockerfile路径
+    image: siyuan044/timelesstales-backend:v0.1.0
     restart: always           # 容器退出时自动重启
     expose:
       - "8000"                # 仅内部暴露端口（不直接映射到主机）
@@ -15,6 +16,7 @@ services:
   # 前端服务
   frontend:
     build: ./package/website         # 前端Dockerfile路径
+    image: siyuan044/timelesstales-frontend:v0.1.0
     restart: always
     ports:
       - "8081:80"               # 前端端口映射（主机8081端口 -> 容器80端口）

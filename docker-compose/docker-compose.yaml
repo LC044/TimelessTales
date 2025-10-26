@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # 后端服务
   backend:
-    image: timelesstales-backend
+    image: siyuan044/timelesstales-backend:latest
     restart: always           # 容器退出时自动重启
     expose:
       - "8000"                # 仅内部暴露端口（不直接映射到主机）
@@ -13,14 +13,15 @@ services:
       - ./server/data:/app/data  # 主机当前目录的data → 容器内/app/data
     environment:
       - TZ=Asia/Shanghai
-      - BLOG_URL=''
-      - BLOG_TOKEN=''
-      - SIYUAN_TOKEN=''
-      - GITHUB_TOKEN=''
+      - BLOG_URL='' # vanblog博客地址，(外部可见，如：https://blog.example.com)
+      - BLOG_API='' # vanblog API地址，（仅内部调用，如：https://blog.example.com/api）
+      - BLOG_TOKEN='' # vanblog访问token （可选）
+      - GITHUB_USERNAME='' # GitHub用户名（必填，用于获取用户数据）
+      - GITHUB_TOKEN='' # GitHub访问token（可选，但推荐设置以避免速率限制）
 
   # 前端服务
   frontend:
-    image: timelesstales-frontend
+    image: siyuan044/timelesstales-frontend:latest
     restart: always
     ports:
       - "8081:80"               # 前端端口映射（主机8081端口 -> 容器80端口）
