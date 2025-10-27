@@ -62,13 +62,13 @@ networks:
 ```
 
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 ### docker 打包
 
 ```bash
-docker-compose up -d --build
+docker-compose --build
 ```
 
 ### 前端
