@@ -1,31 +1,23 @@
 version: '3.8'
 
 services:
-  # 后端服务
   backend:
-    build: ./package/server          # 后端Dockerfile路径
-    image: siyuan044/timelesstales-backend:v0.1.0
-    restart: always           # 容器退出时自动重启
-    expose:
-      - "8000"                # 仅内部暴露端口（不直接映射到主机）
-    networks:
-      - app-network           # 加入自定义网络
-    volumes:
-      - ./package/server/data:/app/data  # 主机当前目录的data → 容器内/app/data
-
-  # 前端服务
-  frontend:
-    build: ./package/website         # 前端Dockerfile路径
-    image: siyuan044/timelesstales-frontend:v0.1.0
+    build: ./package/server
+    # 用环境变量 ${TAG} 动态指定版本（默认 fallback 到 v0.1.0）
+    image: siyuan044/timelesstales-backend:${TAG:-v0.1.0}
     restart: always
-    ports:
-      - "8081:80"               # 前端端口映射（主机8081端口 -> 容器80端口）
-    depends_on:
-      - backend               # 前端依赖后端服务启动
-    networks:
-      - app-network
+    expose: [ "8000" ]
+    networks: [ app-network ]
+    volumes: [ "./package/server/data:/app/data" ]
 
-# 自定义网络（让前后端容器互通）
+  frontend:
+    build: ./package/website
+    image: siyuan044/timelesstales-frontend:${TAG:-v0.1.0}
+    restart: always
+    ports: [ "8081:80" ]
+    depends_on: [ backend ]
+    networks: [ app-network ]
+
 networks:
   app-network:
     driver: bridge
