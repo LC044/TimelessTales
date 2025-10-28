@@ -1,4 +1,4 @@
-name: Build and Push Multi-Platform Docker Images with Compose
+name: Build and Push Multi-Platform Docker Images
 
 on:
   push:
@@ -12,12 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 步骤：设置 Docker Buildx 并启用多平台支持
+      # 启用 Buildx 并安装 QEMU（支持多平台）
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          # 启用 QEMU 模拟器（支持非本机架构构建，如在 amd64 机器上构建 arm64）
-          install: true
+          install: true  # 安装 QEMU 模拟器
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -25,7 +24,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # 生成标签（同上，保持不变）
+      # 生成标签（同上）
       - name: Determine image tags
         id: set-tags
         run: |
@@ -42,25 +41,26 @@ jobs:
           fi
           echo "BASE_TAG=$BASE_TAG" >> $GITHUB_ENV
           echo "ALL_TAGS=$ALL_TAGS" >> $GITHUB_ENV
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> $GITHUB_ENV
 
-      # 构建多平台镜像（关键步骤）
-      - name: Build multi-platform images with docker compose
-        run: |
-          # 指定目标平台（根据需求添加，如 linux/amd64,linux/arm64,linux/arm/v7 等）
-          TAG=${{ env.BASE_TAG }} docker compose build --platform linux/amd64,linux/arm64
+      # 构建并推送后端多平台镜像
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./package/server  # 后端 Dockerfile 路径
+          platforms: linux/amd64,linux/arm64  # 目标平台
+          push: true  # 直接推送
+          tags: |
+            ${{ env.DOCKER_HUB_USERNAME }}/timelesstales-backend:${{ env.BASE_TAG }}
+            ${{ env.EXTRA_TAGS != '' && format('{0}/timelesstales-backend:latest', env.DOCKER_HUB_USERNAME) || '' }}
 
-      # 推送多平台镜像（包含所有标签）
-      - name: Push backend multi-platform images
-        run: |
-          IFS=',' read -ra TAGS <<< "${{ env.ALL_TAGS }}"
-          for TAG in "${TAGS[@]}"; do
-            # 推送多平台镜像（buildx 会自动处理 manifest）
-            docker push ${{ secrets.DOCKER_HUB_USERNAME }}/timelesstales-backend:$TAG
-          done
-
-      - name: Push frontend multi-platform images
-        run: |
-          IFS=',' read -ra TAGS <<< "${{ env.ALL_TAGS }}"
-          for TAG in "${TAGS[@]}"; do
-            docker push ${{ secrets.DOCKER_HUB_USERNAME }}/timelesstales-frontend:$TAG
-          done
+      # 构建并推送前端多平台镜像
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./package/website  # 前端 Dockerfile 路径
+          platforms: linux/amd64,linux/arm64  # 目标平台
+          push: true
+          tags: |
+            ${{ env.DOCKER_HUB_USERNAME }}/timelesstales-frontend:${{ env.BASE_TAG }}
+            ${{ env.EXTRA_TAGS != '' && format('{0}/timelesstales-frontend:latest', env.DOCKER_HUB_USERNAME) || '' }}
