@@ -95,10 +95,10 @@ const toolCategories = ref([
         url: "https://jsonformatter.org"
       },
       {
-        name: "颜色选择器",
+        name: "微信公众号编辑器",
         icon: "mgc_palette_line",
-        description: "选择和生成颜色代码的工具",
-        url: "https://htmlcolorcodes.com"
+        description: "一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
+        url: "https://md.doocs.org/"
       }
     ]
   },

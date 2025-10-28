@@ -40,6 +40,7 @@ jobs:
             ALL_TAGS="$BASE_TAG,$EXTRA_TAGS"
           fi
           echo "BASE_TAG=$BASE_TAG" >> $GITHUB_ENV
+          echo "EXTRA_TAGS=$EXTRA_TAGS" >> $GITHUB_ENV
           echo "ALL_TAGS=$ALL_TAGS" >> $GITHUB_ENV
           echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> $GITHUB_ENV
 
