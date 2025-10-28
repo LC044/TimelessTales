@@ -21,7 +21,7 @@
 
 ### docker 安装
 
-创建docker-compose.yaml文件，写入下面内容，根据情况填写对应的环境变量：
+创建docker-compose.yml文件，写入下面内容，根据情况填写对应的环境变量：
 
 ```yaml
 version: '3.8'
@@ -68,7 +68,7 @@ docker-compose up -d
 ### docker 打包
 
 ```bash
-docker-compose --build
+docker-compose build
 ```
 
 ### 前端
