@@ -103,6 +103,36 @@ const toolCategories = ref([
     ]
   },
   {
+    name: "日常工具",
+    icon: "mgc_tool_line",
+    tools: [
+      {
+        name: "火车票生成器",
+        icon: "mgc_train_line",
+        description: "在线生成电子火车票样式图片",
+        url: "/tools/trainticket"
+      },
+      {
+        name: "单位转换",
+        icon: "fas fa-exchange-alt",
+        description: "各种单位之间的转换",
+        url: "https://convertunits.com"
+      },
+      {
+        name: "密码生成",
+        icon: "fas fa-key",
+        description: "生成高强度随机密码",
+        url: "https://passwordsgenerator.net"
+      },
+      {
+        name: "时间戳转换",
+        icon: "fas fa-clock",
+        description: "Unix时间戳与日期互相转换",
+        url: "https://epochconverter.com"
+      }
+    ]
+  },
+  {
     name: "设计资源",
     icon: "mgc_palette_line",
     tools: [
@@ -123,36 +153,6 @@ const toolCategories = ref([
         icon: "fas fa-font",
         description: "免费商用字体资源",
         url: "https://fonts.google.com"
-      }
-    ]
-  },
-  {
-    name: "日常工具",
-    icon: "fas fa-tools",
-    tools: [
-      {
-        name: "在线翻译",
-        icon: "fas fa-language",
-        description: "多语言互译工具",
-        url: "https://translate.google.com"
-      },
-      {
-        name: "单位转换",
-        icon: "fas fa-exchange-alt",
-        description: "各种单位之间的转换",
-        url: "https://convertunits.com"
-      },
-      {
-        name: "密码生成",
-        icon: "fas fa-key",
-        description: "生成高强度随机密码",
-        url: "https://passwordsgenerator.net"
-      },
-      {
-        name: "时间戳转换",
-        icon: "fas fa-clock",
-        description: "Unix时间戳与日期互相转换",
-        url: "https://epochconverter.com"
       }
     ]
   },

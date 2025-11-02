@@ -7,6 +7,7 @@ import BlogPage from '@/views/BlogPage.vue';
 import More from '@/views/More.vue';
 import ProjectPage from '@/views/ProjectPage.vue';
 import Responsive from '@/views/tools/Responsive.vue';
+import TrainTicketGengrate from '@/views/tools/TrainTicketGengrate.vue';
 import ToolPage from '@/views/tools/ToolPage.vue';
 // import ThoughtPage from '@/views/ThoughtPage.vue';
 
@@ -17,6 +18,7 @@ const routes = [
   { path: '/project', component: ProjectPage },
   { path: '/tools', component: ToolPage },
   { path: '/tools/responsive', component: Responsive },
+  { path: '/tools/trainticket', component: TrainTicketGengrate },
 ];
 
 const router = createRouter({
