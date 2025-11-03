@@ -1,7 +1,7 @@
 <template>
     <!-- 根容器：保持原始尺寸，通过外部传入的scale控制缩放 -->
   <div class="ticket-container" :style="{ transform: `scale(${scale})`, transformOrigin: 'top left'}">
-    <div class="ticket relative text-[32px] w-full max-w-[856px] h-[540px] rounded-[14px] shadow-[0_6px_24px_rgba(0,0,0,.12),0_2px_6px_rgba(0,0,0,.08)] border border-[#b8cfe0] overflow-hidden p-[5px_65px_0_50px]" 
+    <div class="ticket relative text-[32px] text-gray-800 w-full max-w-[856px] h-[540px] rounded-[14px] shadow-[0_6px_24px_rgba(0,0,0,.12),0_2px_6px_rgba(0,0,0,.08)] border border-[#b8cfe0] overflow-hidden p-[5px_65px_0_50px]" 
         role="img" 
         aria-label="火车票">
 
