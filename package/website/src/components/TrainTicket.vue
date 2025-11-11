@@ -14,7 +14,7 @@
     >
       <div
         class="ticket relative text-[32px] text-gray-800 w-full h-full rounded-[14px] shadow-[0_6px_24px_rgba(0,0,0,.12),0_2px_6px_rgba(0,0,0,.08)] border border-[#b8cfe0] overflow-hidden p-[5px_65px_0_50px]" 
-        role="img" 
+        role="img"
         aria-label="火车票">
 
         <!-- 顶部：票号/检票口 -->
@@ -24,33 +24,48 @@
         </div>
 
         <div class="bgmain">
+          <div
+            class="absolute inset-0 z-[-2] opacity-5 bg-bottom bg-no-repeat bg-contain"
+            :style="{ backgroundImage: 'url(/CRH-Dr3OhT7q.jpg)' }"
+          ></div>
           <div class="h-[250px]">
             <!-- 主信息：出发站 / 车次 / 到达站 -->
-            <div class="main grid grid-cols-[1fr_auto_1fr] gap-[10px] px-[0px_40px_0_20px]">
-              <div class="station from items-center">
-                <div class="flex items-end flex-grow-0">
+            <div class="main grid grid-cols-[1fr_auto_1fr] gap-[10px] px-[0px_40px_0_20px] items-center">
+              <div class="station flex flex-col from items-center">
+                <div class="flex items-center flex-grow-0">
                   <div
                     class="name text-[45px] tracking-[0.5px] max-w-[240px]"
                     :class="{'two-char': fromStation.length === 2}"
                   >
                     {{ fromStation }}
                   </div>
-                  <div class="big-fix px-[4px] py-[0px] text-[40px] self-start">站</div>
+                  <div class="big-fix px-[4px] py-[0px] text-[35px]">站</div>
                 </div>
-                <div class="pinyin ml-[10px] text-[24px] text-[#3a5874]">{{ fromPinyin }}</div>
+                <div class="pinyin ml-[10px] text-[24px]">{{ fromPinyin }}</div>
               </div>
-              <div class="train-code text-center text-[50px] pb-0 flex items-center justify-center">{{ trainCode }}</div>
-              <div class="station to items-center">
-                <div class="flex items-end flex-grow-0">
+              <!-- 中间列：车次 + 箭头 -->
+            <div class="train-center flex flex-col items-center justify-center">
+              <div class="train-code text-center text-[50px] leading-none pb-1">
+                {{ trainCode }}
+              </div>
+              <!-- 箭头 -->
+              <!-- CSS 箭头 -->
+              <div class="arrow mt-[6px] relative h-3 w-full">
+                <div class="line h-[4px] bg-gray-600 w-full"></div>
+                <div class="arrow-head absolute right-0 top-[-7px] h-4 w-4 border-t-[4px] border-gray-600 rotate-45"></div>
+              </div>
+            </div>
+              <div class="station to flex flex-col items-center">
+                <div class="flex items-center flex-grow-0">
                   <div
                     class="name text-[45px] tracking-[0.5px] max-w-[240px]"
                     :class="{'two-char': toStation.length === 2}"
                   >
                     {{ toStation }}
                   </div>
-                  <div class="big-fix px-[4px] py-[0px] text-[40px] self-start">站</div>
+                  <div class="big-fix px-[4px] py-[0px] text-[35px]">站</div>
                 </div>
-                <div class="pinyin ml-[10px] text-[24px] text-[#3a5874]">{{ toPinyin }}</div>
+                <div class="pinyin ml-[10px] text-[24px]">{{ toPinyin }}</div>
               </div>
             </div>
 
@@ -208,22 +223,30 @@ defineExpose({ wrapper, exporting  }) // ✅ 暴露内部DOM给父组件访问
 }
 
 /* 背景图 */
-.bgmain::before {
+/* .bgmain::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -2;
   opacity: 0.05;
-  background-image: url('./CRH-Dr3OhT7q.jpg');
+  background-image: url('/CRH-Dr3OhT7q.jpg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: bottom;
-}
+} */
 
 /* 两字站名样式 */
 .two-char {
   min-width: 145px;
   text-align: justify;
   text-align-last: justify;
+}
+.train-arrow {
+  width: 100%; /* 与“G2025”文字宽度完全一致 */
+  height: 0;
+  border-left: 8px solid transparent; /* 左透明边框（数值越小箭头越细） */
+  border-right: 8px solid transparent; /* 右透明边框（与左边数值一致） */
+  border-top: 8px solid #3a5874; /* 箭头颜色（与拼音同色） */
+  margin-top: 6px; /* 箭头与文字的间距（可按需调整） */
 }
 </style>
