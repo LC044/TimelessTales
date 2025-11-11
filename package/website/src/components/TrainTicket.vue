@@ -87,14 +87,9 @@
             </div>
 
             <!-- 二维码 -->
-            <div class="qr self-end justify-self-end w-[148px] h-[148px] border-3 border-black bg-white p-[6px] shadow-[inset_0_0_0_3px_#fff]" aria-hidden="true">
+            <div class="qr self-end justify-self-end w-[148px] h-[148px] border-black  p-[6px] " aria-hidden="true">
               <!-- 简化二维码 -->
-              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                <rect width="120" height="120" fill="#fff"/>
-                <rect x="4" y="4" width="32" height="32" fill="#000"/>
-                <rect x="84" y="4" width="32" height="32" fill="#000"/>
-                <rect x="4" y="84" width="32" height="32" fill="#000"/>
-              </svg>
+              <img src="@/assets/qrcode.png" alt="二维码" class="w-full h-full object-cover" />
             </div>
           </div>
         </div>

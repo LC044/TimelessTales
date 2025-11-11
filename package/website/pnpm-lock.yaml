@@ -14,6 +14,9 @@ importers:
       axios:
         specifier: ^1.12.2
         version: 1.12.2
+      html-to-image:
+        specifier: ^1.11.13
+        version: 1.11.13
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -673,6 +676,9 @@ packages:
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
+
+  html-to-image@1.11.13:
+    resolution: {integrity: sha512-cuOPoI7WApyhBElTTb9oqsawRvZ0rHhaHwghRLlTuffoD1B2aDemlCruLeZrUIIdvG7gs9xeELEPm6PhuASqrg==}
 
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
@@ -1616,6 +1622,8 @@ snapshots:
       function-bind: 1.1.2
 
   hookable@5.5.3: {}
+
+  html-to-image@1.11.13: {}
 
   html2canvas@1.4.1:
     dependencies:
