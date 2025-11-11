@@ -2,22 +2,8 @@
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 transition-colors duration-300">
     <!-- 页面标题 -->
     <h1 class="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
-      火车票信息编辑
+      车票信息编辑
     </h1>
-    
-    <!-- 深色模式切换按钮 -->
-    <div class="flex justify-center mb-6">
-      <button 
-        @click="toggleDarkMode"
-        class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors duration-200"
-        aria-label="切换深色模式"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-        </svg>
-      </button>
-    </div>
-    
     <!-- 主要内容区域：桌面端左右布局，移动端上下布局 -->
     <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -111,7 +97,7 @@
                     @change="formatDateTime"
                     required
                   >
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">选择后自动格式化为“YYYY年MM月DD日 HH:MM”</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"></p>
                 </div>
                 <div class="form-group">
                   <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">检票口</label>
@@ -239,7 +225,7 @@
                     placeholder="例：65773311920607K104567　北京南售"
                     required
                   >
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">格式：一串数字+“　XX售”（中间为全角空格）</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"></p>
                 </div>
               </div>
             </div>
@@ -257,36 +243,57 @@
           </form>
         </div>
         <!-- 预览区：桌面端在右侧 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 transition-colors duration-300">
+        <div class="bg-white flex flex-col dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 transition-colors duration-300">
           <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center">
             <span class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mr-2 text-sm">
               👀
             </span>
             实时预览
           </h3>
-          <div class="flex ticket-container" ref="ticketContainer">
             <!-- 火车票组件：根据屏幕尺寸动态调整缩放比例 -->
-            <TrainTicket class="ticketRef"
-              ref="ticketRef"
-              :scale="ticketScale"
-              :serial="form.serial"
-              :gate="form.gate"
-              :fromStation="form.fromStation"
-              :fromPinyin="form.fromPinyin"
-              :toStation="form.toStation"
-              :toPinyin="form.toPinyin"
-              :trainCode="form.trainCode"
-              :dateTime="form.dateTime"
-              :carriage="form.carriage"
-              :seatNumber="form.seatNumber"
-              :price="form.price"
-              :seatType="form.seatType"
-              :idNumber="form.idNumber"
-              :passengerName="form.passengerName"
-              :footerInfo="form.footerInfo"
-              :is-dark="isDarkMode"
-            />
-          </div>
+             <div class="preview-container">
+              <TrainTicket
+                :serial="form.serial"
+                :gate="form.gate"
+                :fromStation="form.fromStation"
+                :fromPinyin="form.fromPinyin"
+                :toStation="form.toStation"
+                :toPinyin="form.toPinyin"
+                :trainCode="form.trainCode"
+                :dateTime="form.dateTime"
+                :carriage="form.carriage"
+                :seatNumber="form.seatNumber"
+                :price="form.price"
+                :seatType="form.seatType"
+                :idNumber="form.idNumber"
+                :passengerName="form.passengerName"
+                :footerInfo="form.footerInfo"
+              />
+            </div>
+            <!-- 隐藏的原始尺寸车票，用于导出 -->
+            <div 
+                class="fixed top-0 left-0 w-[856px] h-[540px] bg-white z-[-1] opacity-0 pointer-events-none"
+                id="hidden-ticket-area"
+              >
+              <TrainTicket
+                ref="hiddenTicketRef"
+                :serial="form.serial"
+                :gate="form.gate"
+                :fromStation="form.fromStation"
+                :fromPinyin="form.fromPinyin"
+                :toStation="form.toStation"
+                :toPinyin="form.toPinyin"
+                :trainCode="form.trainCode"
+                :dateTime="form.dateTime"
+                :carriage="form.carriage"
+                :seatNumber="form.seatNumber"
+                :price="form.price"
+                :seatType="form.seatType"
+                :idNumber="form.idNumber"
+                :passengerName="form.passengerName"
+                :footerInfo="form.footerInfo"
+              />
+            </div>
         </div>
       </div>
     </div>
@@ -298,44 +305,8 @@
 import { ref, reactive, onMounted, nextTick } from 'vue';
 import TrainTicket from '@/components/TrainTicket.vue';
 import html2canvas from 'html2canvas';
+import { toPng } from "html-to-image";
 
-// 判断是否为移动设备
-const isMobile = ref(false);
-
-// 监听窗口大小变化，动态更新设备类型
-const checkScreenSize = () => {
-  isMobile.value = window.innerWidth < 640; // 小于sm断点(640px)判定为移动端
-};
-
-// 火车票宽度和缩放比例
-const ticketWidth = ref(0);
-const ticketScale = ref(1);
-
-// 计算火车票宽度和缩放比例
-const calculateTicketDimensions = () => {
-  if (ticketContainer.value) {
-    // 获取容器宽度
-    const containerWidth = ticketContainer.value.offsetWidth;
-    // 计算火车票宽度为容器宽度的80%
-    const newWidth = Math.min(containerWidth,800);
-    ticketWidth.value = newWidth;
-    // 计算缩放比例：火车票宽度 / 856
-    ticketScale.value = newWidth / 856;
-  }
-};
-
-// 初始化时检查一次
-onMounted(() => {
-  checkScreenSize();
-  window.addEventListener('resize', checkScreenSize);
-
-  // 初始计算尺寸
-  nextTick(() => {
-    calculateTicketDimensions();
-    // 监听窗口大小变化，重新计算尺寸
-    window.addEventListener('resize', calculateTicketDimensions);
-  });
-});
 
 // 表单初始数据
 const form = reactive({
@@ -358,44 +329,23 @@ const form = reactive({
 
 // 火车票组件ref
 const ticketRef = ref(null);
-const ticketContainer = ref(null);
-// 格式化日期时间
-const formatDateTime = () => {
-};
-
+const hiddenTicketRef = ref(null);
 // 修正保存图片的逻辑
 const handleSaveImage = async () => {
   try {
-    // 1. 等待DOM完全更新（增加延迟确保渲染完成）
-    await new Promise(resolve => setTimeout(resolve, 500)); // 延迟500ms，确保组件渲染
-
-    // 2. 获取外层容器的DOM（比直接获取组件根元素更稳定）
-    const ticketDom = ticketContainer.value;
-    if (!ticketDom) {
-      alert('未找到火车票元素，请重试');
-      return;
-    }
-
-    // 3. 调整html2canvas配置，解决克隆问题
-    const canvas = await html2canvas(ticketDom, {
-      scale: isMobile.value ? 3 : 2,
-      useCORS: true,
-      allowTaint: true, // 允许跨域图片（如果有）
-      logging: false,
-      scrollX: 0, // 避免滚动偏移导致元素丢失
-      scrollY: 0,
-      windowWidth: ticketDom.offsetWidth,
-      windowHeight: ticketDom.offsetHeight,
-      ignoreElements: (el) => {
-        // 忽略可能干扰的隐藏元素
-        return el.style.display === 'none';
-      }
+    const node = hiddenTicketRef.value?.$el;
+    const dataUrl = await toPng(node, {
+      cacheBust: true,
+      backgroundColor: "#fff",
+      quality: 1,
+      pixelRatio: 3,
     });
 
+
     // 4. 生成并下载图片
-    const imgUrl = canvas.toDataURL('image/png');
+    // const imgUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.href = imgUrl;
+    link.href = dataUrl;
     link.download = `${form.trainCode}_${form.passengerName}_火车票.png`;
     link.click();
     link.remove();
@@ -405,3 +355,17 @@ const handleSaveImage = async () => {
   }
 };
 </script>
+
+<style lang="css">
+.container {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  /* overflow: hidden; */
+}
+@media screen and (max-width: 640px) {
+  .preview-container {
+    max-width: 80vw;
+  }
+}
+</style>
