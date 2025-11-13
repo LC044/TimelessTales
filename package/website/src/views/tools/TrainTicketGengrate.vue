@@ -373,7 +373,7 @@ const form = reactive({
   idNumber: '3201021990****5678',
   passengerName: '张三',
   footerInfo: '65773311920607K104567 北京南售',
-  discountType: 'student', // 示例：学生票
+  discountType: '', // 示例：学生票
   berthType: '', // 铺位类型（上/中/下）
   berthNumber: '', // 铺位号（数字部分）
 });
