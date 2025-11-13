@@ -70,7 +70,7 @@
             </div>
 
             <!-- 第二行：时间 / 车厢座位 / 价格 / 座位类型 -->
-            <div class="second-row flex justify-between pr-[120px]">
+            <div class="second-row flex justify-between pr-[100px]">
               <div class="datetime">
                 {{ dateTime.year }}
                 <span class="small-fix text-[24px]">年</span>
@@ -81,11 +81,20 @@
                 {{ dateTime.time }}
                 <span class="small-fix text-[24px]">开</span>
               </div>
-              <div class="seat">{{ carriage }}<span class="small-fix text-[24px]">车</span>{{ seatNumber }}<span class="small-fix text-[24px]">号</span></div>
+              <div class="seat">{{ carriage }}<span class="small-fix text-[24px]">车</span>{{ seatNumber }}<span class="small-fix text-[24px]">号</span><span v-if="berthType">{{ berthType }}</span><span v-if="berthType" class="small-fix text-[24px]">铺</span></div>
             </div>
-            <div class="second-row flex justify-between pr-[120px]">
-              <div class="datetime">￥{{ price }}<span class="small-fix text-[24px]">元</span></div>
-              <div class="seat">{{ seatType }}</div>
+            <!-- 价格和座位类型行：添加优惠标识 -->
+            <div class="second-row flex justify-between pr-[100px] items-center">
+              <div class="datetime flex items-center gap-[12px]">
+                ￥{{ price }}<span class="small-fix text-[24px]">元</span>
+              </div>
+              <div>
+                <!-- 优惠标识 -->
+                <span v-for="(text, index) in discountTexts" :key="index" class="discount-badge">{{ text }}</span>
+              </div>
+              <div class="seat flex items-center gap-[12px]">
+                {{ seatType }}
+              </div>
             </div>
           </div>
 
@@ -120,7 +129,8 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, onMounted, onUnmounted } from 'vue'
+
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // 基础尺寸
 const BASE_WIDTH = 856
@@ -159,11 +169,26 @@ const props = defineProps({
   dateTime: { type: String, default: '2017-06-06 16:46' },
   carriage: { type: String, default: '03' },
   seatNumber: { type: String, default: '04D' },
+  berthType: { type: String, default: '' },
+  berthNumber: { type: String, default: '' },
   price: { type: String, default: '239.0' },
   seatType: { type: String, default: '二等座' },
   idNumber: { type: String, default: '14041111985****0854' },
   passengerName: { type: String, default: '李小二' },
-  footerInfo: { type: String, default: '65773311920607J093984　郑州东售' }
+  footerInfo: { type: String, default: '65773311920607J093984　郑州东售' },
+  // 修改：支持传入数组（多个优惠类型）或字符串（单个优惠类型）
+  discountType: {
+    type: [String, Array],
+    default: '',
+    validator: (value) => {
+      // 允许的优惠类型（支持单个或数组）
+      const validTypes = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '']
+      if (Array.isArray(value)) {
+        return value.every(item => validTypes.includes(item))
+      }
+      return validTypes.includes(value)
+    }
+  }
 })
 
 // 拆分时间
@@ -174,6 +199,50 @@ const dateTime = computed(() => {
     day: props.dateTime.slice(8, 10),
     time: props.dateTime.slice(11)
   }
+})
+
+// 修改：计算优惠显示文字（支持多个）
+const discountTexts = computed(() => {
+  const texts = []
+  const types = Array.isArray(props.discountType) ? props.discountType : props.discountType ? [props.discountType] : []
+  
+  types.forEach(type => {
+    switch(type) {
+      case 'student':
+        texts.push('学', '惠') // 学生票同时添加"学"和"惠"
+        break
+      case 'discount':
+        texts.push('惠')
+        break
+      case 'child':
+        texts.push('儿')
+        break
+      case 'elder':
+        texts.push('老')
+        break
+      case 'military':
+        texts.push('军')
+        break
+      case 'disabled':
+        texts.push('残')
+        break
+      case 'group':
+        texts.push('团')
+        break
+      case 'worker-group':
+        texts.push('工')
+        break
+      case 'student-group':
+        texts.push('学', '团')
+        break
+      default:
+        // 支持直接传入文字（如['优', '惠']）
+        if (type && !validTypes.includes(type)) {
+          texts.push(type)
+        }
+    }
+  })
+  return texts
 })
 
 defineExpose({ wrapper, exporting  }) // ✅ 暴露内部DOM给父组件访问
@@ -248,5 +317,20 @@ defineExpose({ wrapper, exporting  }) // ✅ 暴露内部DOM给父组件访问
   border-right: 8px solid transparent; /* 右透明边框（与左边数值一致） */
   border-top: 8px solid #3a5874; /* 箭头颜色（与拼音同色） */
   margin-top: 6px; /* 箭头与文字的间距（可按需调整） */
+}
+/* 新增：优惠标识圆圈样式 */
+.discount-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 3px solid #1f1d1d;
+  border-radius: 50%;
+  font-size: 24px;
+  /* font-weight: 600; */
+  line-height: 1;
+  text-align: center;
+  /* background-color: rgba(227, 87, 87, 0.08); */
 }
 </style>

@@ -31,7 +31,7 @@
                   >
                 </div>
                 <div class="form-group">
-                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">出发站拼音（全小写）</label>
+                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">出发站拼音</label>
                   <input 
                     v-model="form.fromPinyin" 
                     type="text" 
@@ -53,7 +53,7 @@
                   >
                 </div>
                 <div class="form-group">
-                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">到达站拼音（全小写）</label>
+                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">到达站拼音</label>
                   <input
                     v-model="form.toPinyin"
                     type="text"
@@ -122,6 +122,16 @@
                     <option value="二等座">二等座</option>
                     <option value="商务座">商务座</option>
                     <option value="无座">无座</option>
+                    <!-- 新增卧铺类型 -->
+                    <option value="硬座">硬座</option>
+                    <option value="软座">软座</option>
+                    <option value="特等座">特等座</option>
+                    <option value="软卧">软卧</option>
+                    <option value="硬卧">硬卧</option>
+                    <option value="动卧">动卧</option>
+                    <option value="高级软卧">高级软卧</option>
+                    <option value="一等卧">一等卧</option>
+                    <option value="二等卧">二等卧</option>
                   </select>
                 </div>
               </div>
@@ -148,8 +158,24 @@
                     required
                   >
                 </div>
+                <!-- 铺位类型选择（卧铺专用，上/中/下） -->
+                <!-- 铺位类型（卧铺专用，上/中/下铺选择） -->
+                <div class="form-group" v-if="sleeperTypes.includes(form.seatType)">
+                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">铺位类型</label>
+                  <select 
+                    v-model="form.berthType" 
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                    required
+                  >
+                    <option value="">选择铺位</option>
+                    <option value="上">上铺</option>
+                    <option value="中">中铺</option>
+                    <option value="下">下铺</option>
+                  </select>
+                </div>
                 <div class="form-group">
-                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">座位号</label>
+                  <label v-if="sleeperTypes.includes(form.seatType)" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">铺位号</label>
+                  <label v-else class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">座位号</label>
                   <input 
                     v-model="form.seatNumber" 
                     type="text" 
@@ -162,10 +188,10 @@
                 </div>
                 <div class="form-group">
                   <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">票价（元）</label>
-                  <input 
-                    v-model="form.price" 
-                    type="number" 
-                    step="0.5" 
+                  <input
+                    v-model="form.price"
+                    type="number"
+                    step="0.5"
                     min="0"
                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="例：443.5"
@@ -175,13 +201,32 @@
                 </div>
                 <div class="form-group">
                   <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">票号</label>
-                  <input 
-                    v-model="form.serial" 
-                    type="text" 
+                  <input
+                    v-model="form.serial"
+                    type="text"
                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="例：283K104567"
                     required
                   >
+                </div>
+                <!-- 座位/价格信息区域 - 新增优惠类型选择 -->
+                <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">优惠类型</label>
+                  <select
+                    v-model="form.discountType"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                  >
+                    <option value="">无优惠</option>
+                    <option value="student">学生票（学+惠）</option>
+                    <option value="child">儿童票（儿）</option>
+                    <option value="military">残疾军人票（军）</option>
+                    <option value="disabled">残疾人票（残）</option>
+                    <option value="elder">老人优惠票（老）</option>
+                    <option value="discount">普通优惠票（惠）</option>
+                    <option value="group">团体票（团）</option>
+                    <option value="worker-group">务工团体票（工）</option>
+                    <option value="student-group">学生团体票（学+团）</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -263,11 +308,13 @@
                 :dateTime="form.dateTime"
                 :carriage="form.carriage"
                 :seatNumber="form.seatNumber"
+                :berthType="form.berthType"
                 :price="form.price"
                 :seatType="form.seatType"
                 :idNumber="form.idNumber"
                 :passengerName="form.passengerName"
                 :footerInfo="form.footerInfo"
+                :discountType="form.discountType"
               />
             </div>
             <!-- 隐藏的原始尺寸车票，用于导出 -->
@@ -287,11 +334,13 @@
                 :dateTime="form.dateTime"
                 :carriage="form.carriage"
                 :seatNumber="form.seatNumber"
+                :berthType="form.berthType"
                 :price="form.price"
                 :seatType="form.seatType"
                 :idNumber="form.idNumber"
                 :passengerName="form.passengerName"
                 :footerInfo="form.footerInfo"
+                :discountType="form.discountType"
               />
             </div>
         </div>
@@ -302,9 +351,8 @@
 
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue';
+import { ref, reactive, onMounted, nextTick, watch, computed} from 'vue';
 import TrainTicket from '@/components/TrainTicket.vue';
-import html2canvas from 'html2canvas';
 import { toPng } from "html-to-image";
 
 
@@ -324,7 +372,38 @@ const form = reactive({
   seatType: '一等座',
   idNumber: '3201021990****5678',
   passengerName: '张三',
-  footerInfo: '65773311920607K104567 北京南售'
+  footerInfo: '65773311920607K104567 北京南售',
+  discountType: 'student', // 示例：学生票
+  berthType: '', // 铺位类型（上/中/下）
+  berthNumber: '', // 铺位号（数字部分）
+});
+
+// 定义卧铺类型列表（用于判断是否显示铺位选择）
+const sleeperTypes = ref([
+  '软卧', '硬卧', '动卧', '高级软卧', '一等卧', '二等卧'
+]);
+
+// 铺位类型选项
+const berthOptions = ref([
+  { label: '上铺', value: '上' },
+  { label: '中铺', value: '中' },
+  { label: '下铺', value: '下' }
+]);
+
+// 监听座位类型变化，重置铺位信息
+watch(() => form.seatType, (newVal) => {
+  if (!sleeperTypes.value.includes(newVal)) {
+    form.berthType = '';
+    form.berthNumber = '';
+  }
+});
+
+// 计算最终座位号（铺位号+铺位类型）
+const finalSeatNumber = computed(() => {
+  if (sleeperTypes.value.includes(form.seatType) && form.berthNumber && form.berthType) {
+    return `${form.berthNumber}${form.berthType}`;
+  }
+  return form.seatNumber;
 });
 
 // 火车票组件ref
