@@ -47,6 +47,8 @@ const tag_num = ref(2)
 const word_num = ref(197220)
 // 声明默认展开状态常量
 const DEFAULT_EXPANDED = true;
+// 缓存配置：5分钟过期（单位：毫秒）
+const CACHE_EXPIRE_TIME = 5 * 60 * 1000; // 300000ms = 5分钟
 // 获取Store实例
 const counterStore = useCounterStore()
 const years = ref([
@@ -98,84 +100,91 @@ const toggleExpand = (yearGroup) => {
   yearGroup.isExpanded = !yearGroup.isExpanded;
 };
 
-// 发起请求的函数
-const fetchData = async () => {
-  // years.value = null
-  if (loading.value) return // 防止重复请求
-  error.value = null
-  loading.value = true
+// 核心请求逻辑（支持强制刷新、缓存过期判断）
+const fetchData = async (forceRefresh = false) => {
+  if (loading.value) return; // 防止重复请求
+  error.value = null;
+  loading.value = true;
 
   try {
-    // 发起GET请求（使用之前配置的代理路径）
-    const response = await axios.get('/api/blog/public/timeline')
-    const status = response.data.statusCode
-    if (status !== 200) {
-      throw new Error(response.data.message || '请求失败，请稍后再试')
+    // ============== 1. 时间线数据处理（含缓存过期判断）==============
+    const isTimelineExpired = !counterStore.cacheTime || (Date.now() - counterStore.cacheTime) > CACHE_EXPIRE_TIME;
+    if (!forceRefresh && counterStore.timelineCache && !isTimelineExpired) {
+      // 缓存有效：直接使用缓存
+      years.value = counterStore.timelineCache;
+    } else {
+      // 缓存过期/无缓存/强制刷新：重新请求
+      const timelineRes = await axios.get('/api/blog/public/timeline');
+      if (timelineRes.data.statusCode !== 200) throw new Error(timelineRes.data.message || '时间线请求失败');
+      const newYears = handleTimelineData(timelineRes.data.data);
+      years.value = newYears;
+      counterStore.setTimelineCache(newYears); // 更新缓存（自动刷新cacheTime）
     }
-    // 将结果存入响应式变量
-    const data = response.data.data
-    console.log(data)
-    // 步骤1：提取对象的所有年份键（得到 ["2023", "2024", "2025"]）
-    const yearKeys = Object.keys(data);
-    // 步骤2：将年份键转为数字，并按倒序排序（得到 [2025, 2024, 2023]）
-    const sortedYears = yearKeys
-      .map(year => Number(year)) // 字符串转数字（避免 "202" 比 "2023" 大的字符串排序坑）
-      .sort((a, b) => b - a); // 倒序排序（b - a 是倒序，a - b 是正序）
-    // 步骤3：遍历排序后的年份，再遍历对应文章
-    const new_years = []
-    sortedYears.forEach(year => {
-      const yearStr = String(year); // 转回字符串，匹配原始对象的键
-      const articles = data[yearStr]; // 当前年份的所有文章
-      new_years.push({
-        year: yearStr,
-        isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
-        articles: articles
-      })
-      // 遍历当前年份的每篇文章
-      articles.forEach((article, index) => {
-        // 2025-10-24T16:31:03.078Z，转成时区时间 MM-DD 格式
-        const utcDate = new Date(article.createdAt);
-        article.date = `${String(utcDate.getMonth() + 1).padStart(2, '0')}-${String(utcDate.getDate()).padStart(2, '0')}`;
-      });
+
+    // ============== 2. 元数据处理（和时间线共用缓存过期状态）==============
+    if (!forceRefresh && counterStore.metaCache && !isTimelineExpired) {
+      // 缓存有效：直接使用缓存
+      const metaCache = counterStore.metaCache;
+      tag_num.value = metaCache.tagNum;
+      category_num.value = metaCache.categoryNum;
+      article_num.value = metaCache.articleNum;
+      word_num.value = metaCache.wordNum;
+      counterStore.setVisit(metaCache.visit);
+      counterStore.setVisitor(metaCache.visitor);
+    } else {
+      // 缓存过期/无缓存/强制刷新：重新请求
+      const metaRes = await axios.get('/api/blog/public/meta');
+      if (metaRes.data.statusCode !== 200) throw new Error(metaRes.data.message || '元数据请求失败');
+      const metaData = metaRes.data.data;
+      // 处理元数据并缓存
+      const metaCache = {
+        tagNum: metaData.tags.length,
+        categoryNum: metaData.meta.categories.length,
+        articleNum: metaData.totalArticles,
+        wordNum: metaData.totalWordCount,
+        visit: metaData.meta.viewer,
+        visitor: metaData.meta.visited
+      };
+      // 更新组件状态
+      tag_num.value = metaCache.tagNum;
+      category_num.value = metaCache.categoryNum;
+      article_num.value = metaCache.articleNum;
+      word_num.value = metaCache.wordNum;
+      counterStore.setVisit(metaCache.visit);
+      counterStore.setVisitor(metaCache.visitor);
+      counterStore.setMetaCache(metaCache); // 缓存元数据
+    }
+  } catch (err) {
+    error.value = err.message || '请求失败，请稍后再试';
+    console.error('请求错误:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 提取原日期处理逻辑为独立函数（复用）
+const handleTimelineData = (data) => {
+  const yearKeys = Object.keys(data);
+  const sortedYears = yearKeys.map(Number).sort((a, b) => b - a);
+  return sortedYears.map(year => {
+    const yearStr = String(year);
+    const articles = data[yearStr].map(article => {
+      const utcDate = new Date(article.createdAt);
+      return {
+        ...article,
+        date: `${String(utcDate.getMonth() + 1).padStart(2, '0')}-${String(utcDate.getDate()).padStart(2, '0')}`
+      };
+    });
+    return {
+      year: yearStr,
+      isExpanded: DEFAULT_EXPANDED,
+      articles
+    };
   });
-    years.value = new_years
-  } catch (err) {
-    // 处理错误
-    error.value = err.message || '请求失败，请稍后再试'
-    console.error('请求错误:', err)
-  } finally {
-    // 结束加载状态
-    loading.value = false
-  }
-  try {
-    // 发起GET请求（使用之前配置的代理路径）
-    const response = await axios.get('/api/blog/public/meta')
-    const status = response.data.statusCode
-    if (status !== 200) {
-      throw new Error(response.data.message || '请求失败，请稍后再试')
-    }
-    // 将结果存入响应式变量
-    const data = response.data.data
-    const tags = data.tags
-    tag_num.value = tags.length
-    const categories = data.meta.categories
-    category_num.value = categories.length
-    article_num.value = data.totalArticles
-    word_num.value = data.totalWordCount
-    counterStore.setVisit(data.meta.viewer)
-    counterStore.setVisitor(data.meta.visited)
-  } catch (err) {
-    // 处理错误
-    error.value = err.message || '请求失败，请稍后再试'
-    console.error('请求错误:', err)
-  } finally {
-    // 结束加载状态
-    loading.value = false
-  }
-}
+};
 
-// 可选：组件挂载时自动请求
-onMounted(fetchData)
+// 组件挂载时请求（优先用缓存）
+onMounted(() => fetchData());
 
 </script>
 
