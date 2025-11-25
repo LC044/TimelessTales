@@ -20,7 +20,7 @@
             </a>
           </li>
           <li class="flex items-center justify-center w-10 h-10 text-4xl rounded-full">
-            <a href="https://blog.lc044.love" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-pink-400">
+            <a href="https://blog.siyuan.ink" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-pink-400">
               <i class="mgc_comment_2_line"></i>
             </a>
           </li>
