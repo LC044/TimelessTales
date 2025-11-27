@@ -11,8 +11,9 @@
   "dependencies": {
     "@vueuse/core": "^14.0.0",
     "axios": "^1.12.2",
-    "html2canvas": "^1.4.1",
     "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
+    "lucide-vue-next": "^0.555.0",
     "mingcute_icon": "^2.9.6",
     "pinia": "^3.0.3",
     "vue": "^3.5.13",

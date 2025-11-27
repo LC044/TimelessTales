@@ -10,7 +10,9 @@
         transformOrigin: 'top left',
         width: BASE_WIDTH + 'px',
         height: BASE_HEIGHT + 'px',
-        backgroundImage: backgroundImage
+        backgroundImage: backgroundImage,
+        backgroundColor: style === 'red' ? 'white' : 'transparent',
+        backgroundBlendMode: 'normal',
       }"
     >
       <div

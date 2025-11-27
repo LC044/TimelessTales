@@ -6,6 +6,42 @@
   color: inherit !important;
 }
 
+/* 定义动态颜色类，映射到 JS 注入的变量 */
+.text-primary-600 { color: var(--theme-primary); }
+.text-primary-500 { color: var(--theme-primary); } /* 近似处理 */
+.bg-primary-600 { background-color: var(--theme-primary); }
+.bg-primary-500 { background-color: var(--theme-primary); }
+.border-primary-500 { border-color: var(--theme-primary); }
+.focus\:border-primary-500:focus { border-color: var(--theme-primary); }
+.focus\:ring-primary-500:focus { --tw-ring-color: var(--theme-primary); }
+
+/* 2. 添加关键的 hover 规则 */
+/* 注意：您需要使用反斜杠 '\' 来转义 Tailwind 类名中的冒号 */
+.hover\:text-primary-500:hover { 
+    color: var(--theme-primary); 
+    /* 建议在 hover 时稍微变亮或变暗，以提供视觉反馈 */
+    filter: brightness(0.9); 
+}
+
+/* 3. 添加深色模式下的 hover 规则 (确保在深色模式下颜色不变暗，反而可以更亮) */
+.dark .hover\:text-primary-500:hover {
+    color: var(--theme-primary);
+    filter: brightness(1.2); /* 在深色背景下稍微增亮 */
+}
+
+/* RGB 版本的背景色，用于支持 opacity (bg-primary-50 等) */
+.bg-primary-50 { background-color: rgba(var(--theme-rgb), 0.1); }
+.bg-primary-200 { background-color: rgba(var(--theme-rgb), 0.3); }
+.shadow-primary-200 { --tw-shadow-color: rgba(var(--theme-rgb), 0.3); }
+
+/* 深色模式下的微调 */
+.dark .text-primary-400 { color: var(--theme-primary); filter: brightness(1.2); }
+.dark .bg-primary-900 { background-color: rgba(var(--theme-rgb), 0.9); }
+
+/* 动画 */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
 :root {
   --bg-color: #fafafa;
   --text-color: #333333;

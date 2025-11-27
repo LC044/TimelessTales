@@ -14,8 +14,8 @@
 
         <div class="mb-4 md:mb-0 text-center md:text-left">
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            <i class="mgc_user_3_line"></i> {{ counterStore.visitorCount.toLocaleString() }} | 
-            <i class="mgc_eye_2_line"></i> {{ counterStore.visitCount.toLocaleString() }}
+            <i class="mgc_user_3_line"></i> {{ counterStore.visitor.toLocaleString() }} | 
+            <i class="mgc_eye_2_line"></i> {{ counterStore.visit.toLocaleString() }}
           </p>
         </div>
 
