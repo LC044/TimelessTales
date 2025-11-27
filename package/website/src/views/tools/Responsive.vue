@@ -1,136 +1,330 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 md:p-6">
-    <!-- 工具栏 -->
-    <div class="toolbar mb-4 md:mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center">
-      <div class="input-url w-full md:flex-1 flex gap-3 items-center">
-        <input 
-          type="text" 
-          v-model="urlInput" 
-          placeholder="在此输入 URL（例如 https://example.com）" 
-          @keyup.enter="applyUrl"
-          class="flex-1 px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-200 transition-all text-sm"
-        />
-        <button 
-          class="btn px-4 py-3 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors text-sm font-medium" 
-          @click="applyUrl"
-        >
-          加载 URL
-        </button>
-        <button 
-          class="btn secondary px-4 py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-sm font-medium" 
-          @click="clearUrl"
-        >
-          清除
-        </button>
-      </div>
+  <div :class="[isDark ? 'dark' : '', 'h-screen w-screen overflow-hidden flex flex-col font-sans']">
+    <header class="flex-none z-50 shadow-sm relative">
+      <div class="max-w-full px-4 sm:px-6 py-2 flex flex-col md:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 select-none">
+          <div class="p-1 bg-primary-500 rounded-lg shadow-md shadow-blue-500/30">
+            <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </div>
+          <h1 class="text-md font-bold text-gray-900 dark:text-white hidden sm:block">多合一网页<span class="text-primary-500">缩略图</span></h1>
+        </div>
 
-      <div class="controls flex flex-wrap gap-3 items-center w-full md:w-auto">
-        <label class="text-xs text-gray-600">整体缩放</label>
-        <input 
-          type="range" 
-          min="10" 
-          max="150" 
-          v-model.number="globalScale"
-          class="w-28 md:w-32 accent-blue-200"
-        />
-        <div class="w-2"></div>
-        <button 
-          class="btn secondary px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors text-xs font-medium" 
-          @click="resetAll"
-        >
-          重置全部位置
-        </button>
-      </div>
-    </div>
+        <div class="flex-1 w-full max-w-xl relative group">
+          <input
+            v-model="inputUrl"
+            @keyup.enter="loadUrl"
+            type="text"
+            placeholder="输入网址 (例如: https://siyuan.ink)"
+            class="block w-full pl-4 pr-20 py-1.5 text-sm border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all"
+          >
+          <button
+            @click="loadUrl"
+            class="absolute inset-y-1 right-1 px-3 bg-primary-500 hover:bg-primary-600 text-white text-xs font-medium rounded-md transition-colors"
+          >
+            加载
+          </button>
+        </div>
 
-    <!-- 工作区 -->
-    <div 
-      class="workspace relative w-full rounded-xl border border-gray-200 bg-white/80 shadow-sm overflow-hidden"
-      ref="workspace"
-      :style="{ height: 'calc(100vh - 130px)' }"
+        <div class="flex items-center gap-2">
+          <div class="flex rounded-lg p-0.5">
+            <button
+              v-for="device in devices"
+              :key="device.key"
+              @click="toggleDeviceVisibility(device)"
+              :class="[
+                'p-0 rounded-md bg-white dark:bg-gray-700 transition-all duration-200 border border-transparent hover:border-gray-300 dark:hover:border-gray-600 flex items-center justify-center w-8 h-8',
+                device.visible
+                  ? 'text-primary-500 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+              ]"
+              :title="device.visible ? '隐藏 ' + device.name : '显示 ' + device.name"
+            >
+            <span :class="device.icon"></span>
+              <!-- <component :is="device.icon" class="w-4 h-4" /> -->
+            </button>
+          </div>
+          <button
+            @click="resetLayout"
+            class="p-1.5 text-xs font-medium text-white bg-primary-500 hover:bg-primary-600 dark:hover:bg-primary-600 rounded-lg transition"
+            title="重置位置"
+          >
+            重置位置</button>
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="flex-1 relative overflow-hidden cursor-grab active:cursor-grabbing"
+      @mousedown.self="startPan"
+      @mousemove="onMouseMove"
+      @mouseup="stopDrag"
+      @mouseleave="stopDrag"
+      ref="canvasRef"
     >
-      <DevicePreview
-        v-for="dev in devices"
-        :key="dev.id"
-        :url="url"
-        :label="dev.label"
-        :viewW="dev.w"
-        :viewH="dev.h"
-        :initX="dev.initX"
-        :initY="dev.initY"
-        :scalePercent="globalScale"
-        @update:position="pos => updatePos(dev.id, pos)"
-      />
-    </div>
+      <div v-if="!currentUrl" class="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <div class="text-center opacity-40">
+          <h2 class="text-3xl font-bold text-gray-400 dark:text-gray-600">DRAG & DROP CANVAS</h2>
+          <p class="mt-2 text-gray-400">输入网址，拖动设备，自由组合截图</p>
+        </div>
+      </div>
+
+      <div
+        v-for="device in devices"
+        :key="device.key"
+        v-show="device.visible"
+        class="absolute transition-transform duration-75 ease-linear origin-center select-none will-change-transform"
+        :style="{ 
+          transform: `translate(${device.x}px, ${device.y}px)`, 
+          zIndex: device.zIndex 
+        }"
+        @mousedown.stop="startDrag($event, device)"
+      >
+        <div class="group relative flex flex-col items-center">
+          
+          <div class="absolute -top-10 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-default">
+            <div class="bg-gray-800 text-white text-xs py-1 px-3 rounded-full shadow-lg flex items-center gap-2 pointer-events-auto">
+              <span class="font-bold mr-1">{{ device.name }}</span>
+              <span class="opacity-50">|</span>
+              <button 
+                v-if="device.canRotate" 
+                @click.stop="rotateDevice(device)"
+                class="hover:text-blue-300 transition-colors flex items-center gap-1"
+                title="切换横竖屏"
+              >
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                {{ device.isLandscape ? '横屏' : '竖屏' }}
+              </button>
+              <span v-if="device.canRotate" class="opacity-50">|</span>
+              <button @click.stop="toggleDeviceVisibility(device)" class="hover:text-red-400 transition-colors">关闭</button>
+            </div>
+          </div>
+
+          <div v-if="device.key === 'desktop'" class="cursor-move">
+            <div class="relative bg-gray-800 dark:bg-gray-700 rounded-t-xl border-[12px] border-gray-800 dark:border-gray-700 shadow-2xl">
+              <div class="absolute top-[-8px] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-600 rounded-full z-10"></div>
+              <div class="relative bg-white overflow-hidden w-[640px] h-[360px]">
+                 <div class="absolute inset-0 z-20 bg-transparent"></div>
+                 <iframe 
+                  :src="currentUrl" 
+                  class="w-[1920px] h-[1080px] border-0 origin-top-left transform scale-[0.3333]"
+                  sandbox="allow-scripts allow-same-origin"
+                  loading="lazy"
+                ></iframe>
+              </div>
+              <div class="bg-gray-200 dark:bg-gray-600 h-8 rounded-b-md flex items-center justify-center border-t border-gray-300 dark:border-gray-500">
+                 <div class="w-4 h-4 rounded-full bg-gray-400"></div>
+              </div>
+            </div>
+            <div class="w-24 h-12 bg-gray-300 dark:bg-gray-600 shadow-inner mx-auto"></div>
+            <div class="w-32 h-2 bg-gray-300 dark:bg-gray-600 rounded-full shadow-lg mx-auto"></div>
+          </div>
+
+          <div v-else-if="device.key === 'laptop'" class="cursor-move flex flex-col items-center animate-fade-in-up">
+            <div class="relative bg-gray-800 rounded-t-xl border-[10px] border-gray-800 shadow-2xl">
+              <div class="relative bg-white overflow-hidden w-[400px] h-[250px]"> <div class="absolute inset-0 z-20 bg-transparent"></div>
+                <iframe 
+                  :src="currentUrl" 
+                  class="w-[1280px] h-[800px] border-0 origin-top-left transform scale-[0.3125]" sandbox="allow-scripts allow-same-origin"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </div>
+            <div class="w-[460px] h-3 bg-gray-300 dark:bg-gray-600 rounded-b-lg shadow-xl border-t border-gray-400 flex justify-center">
+               <div class="w-16 h-1.5 bg-gray-400 rounded-b-md mt-[-1px]"></div>
+            </div>
+          </div>
+
+          <div v-else-if="device.key === 'tablet'" class="cursor-move">
+            <div 
+              class="relative bg-gray-800 rounded-[1rem] p-1.5 shadow-2xl border border-gray-700 transition-all duration-500"
+              :class="device.isLandscape ? 'w-[320px] h-[230px]' : 'w-[230px] h-[320px]'" >
+              <div :class="[
+                'absolute bg-gray-600 rounded-full z-10',
+                device.isLandscape ? 'left-2 top-1/2 -translate-y-1/2 w-3 h-3' : 'top-2 left-1/2 -translate-x-1/2 w-3 h-3'
+              ]"></div>
+              
+              <div class="relative bg-white overflow-hidden w-full h-full rounded-2xl">
+                <div class="absolute inset-0 z-20 bg-transparent"></div>
+                <iframe 
+                  :src="currentUrl" 
+                  class="border-0 origin-top-left transition-all duration-500"
+                  :style="{
+                    width: device.isLandscape ? '1024px' : '768px',
+                    height: device.isLandscape ? '768px' : '1024px',
+                    transform: `scale(${device.isLandscape ? (230/768) : (230/768)})` // 调整缩放比例
+                  }"
+                  sandbox="allow-scripts allow-same-origin"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="device.key === 'mobile'" class="cursor-move">
+            <div 
+              class="relative bg-gray-900 shadow-2xl border-1 border-gray-700 ring-2 ring-black transition-all duration-500"
+              :class="[
+                // 调整视觉尺寸 (宽度更小，高度相对更短)
+                device.isLandscape ? 'w-[280px] h-[130px] rounded-[1rem] p-1' : 'w-[130px] h-[280px] rounded-[1rem] p-1'
+              ]"
+            >
+              <div :class="[
+                'absolute bg-black rounded-full z-30 flex justify-center items-center gap-2 pointer-events-none',
+                device.isLandscape ? 'left-0 top-1/2 -translate-y-1/2 w-3 h-8 flex-col' : 'top-0 left-1/2 -translate-x-1/2 w-8 h-3'
+              ]">
+                  <div class="w-1.5 h-1.5 rounded-full bg-blue-900/50"></div>
+              </div>
+
+              <div 
+                class="relative overflow-hidden w-full h-full bg-black transition-all flex flex-col" 
+                :class="device.isLandscape ? 'rounded-[0.8rem] pl-0' : 'rounded-[0.8rem] pt-0 mt-0'" 
+              >
+                 <div class="absolute inset-0 z-20 bg-transparent"></div>
+                 
+                 <div class="flex-1 w-full bg-white relative overflow-hidden rounded-t-lg">
+                    <iframe 
+                      :src="currentUrl" 
+                      class="border-0 origin-top-left transition-all duration-500"
+                      :style="{
+                        width: device.isLandscape ? '844px' : '390px',
+                        height: device.isLandscape ? '390px' : '844px',
+                        // 修正后的缩放因子 (130 / 390 = 0.333)
+                        transform: `scale(${device.isLandscape ? (130/390) : (130/390)})` 
+                      }"
+                      sandbox="allow-scripts allow-same-origin"
+                      loading="lazy"
+                    ></iframe>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
   </div>
 </template>
 
-<script>
-import { ref } from 'vue'
-import DevicePreview from '@/components/DevicePreview.vue'
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
 
-export default {
-  name: 'App',
-  components: { DevicePreview },
-  setup() {
-    const urlInput = ref('https://siyuan.ink')
-    const url = ref('')
-    const globalScale = ref(35) // 全局缩放百分比
-    const workspace = ref(null)
+const inputUrl = ref('https://siyuan.ink');
+const currentUrl = ref('');
+const isDark = ref(false);
+const maxZIndex = ref(10); // 用于管理层级
 
-    // 设备列表及视口尺寸
-    const devices = ref([
-      { id: 'desktop', label: '台式机 - 大屏', w: 1920, h: 1080, initX: 300, initY: 40 },
-      { id: 'laptop', label: '笔记本', w: 1366, h: 768, initX: 820, initY: 300 },
-      { id: 'pad', label: 'Pad', w: 820, h: 1180, initX: 160, initY: 300 },
-      { id: 'mobile', label: '手机', w: 390, h: 844, initX: 350, initY: 420 }
-    ])
+// 根据图片调整的初始设备状态和位置
+const initialDevices = [
+  // Desktop - 中心偏右后方
+  { key: 'desktop', name: 'Desktop', icon: "mgc_computer_line", visible: true, x: 300, y: 100, zIndex: 1, canRotate: false, isLandscape: true },
+  // Laptop - 右下方，部分在Desktop下方
+  { key: 'laptop', name: 'Laptop', icon: "mgc_laptop_line", visible: true, x: 750, y: 380, zIndex: 2, canRotate: false, isLandscape: true },
+  // Tablet - 左前方
+  { key: 'tablet', name: 'Tablet', icon: "mgc_pad_line", visible: true, x: 180, y: 380, zIndex: 3, canRotate: true, isLandscape: false },
+  // Mobile - 左前方，部分在Tablet下方
+  { key: 'mobile', name: 'Mobile', icon: "mgc_cellphone_line", visible: true, x: 380, y: 450, zIndex: 4, canRotate: true, isLandscape: false },
+];
 
-    function applyUrl() {
-      url.value = urlInput.value.trim()
-    }
+const devices = reactive(JSON.parse(JSON.stringify(initialDevices)));
 
-    function clearUrl() {
-      urlInput.value = ''
-      url.value = ''
-    }
+// --- 核心功能逻辑 ---
 
-    function updatePos(id, pos) {
-      const d = devices.value.find(x => x.id === id)
-      if (d) {
-        d.initX = pos.x
-        d.initY = pos.y
-      }
-    }
+const loadUrl = () => {
+  if (!inputUrl.value) return;
+  let url = inputUrl.value;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  currentUrl.value = url;
+};
 
-    function resetAll() {
-      devices.value = [
-        { id: 'desktop', label: '台式机 - 大屏', w: 1920, h: 1080, initX: 300, initY: 40 },
-        { id: 'laptop', label: '笔记本', w: 1366, h: 768, initX: 820, initY: 300 },
-        { id: 'pad', label: 'Pad', w: 820, h: 1180, initX: 160, initY: 300 },
-        { id: 'mobile', label: '手机', w: 390, h: 844, initX: 350, initY: 420 }
-      ]
-      globalScale.value = 35
-    }
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+};
 
-    return { urlInput, url, applyUrl, clearUrl, devices, updatePos, resetAll, globalScale, workspace }
+const toggleDeviceVisibility = (device) => {
+  device.visible = !device.visible;
+  if (device.visible) bringToFront(device);
+};
+
+const resetLayout = () => {
+  // 恢复初始位置和可见性
+  initialDevices.forEach((init, index) => {
+    devices[index].x = init.x;
+    devices[index].y = init.y;
+    devices[index].isLandscape = init.isLandscape;
+    devices[index].visible = init.visible; // 也重置可见性
+  });
+};
+
+const rotateDevice = (device) => {
+  device.isLandscape = !device.isLandscape;
+};
+
+// --- 拖拽系统实现 ---
+
+let draggedDevice = null;
+let startX = 0;
+let startY = 0;
+let initialLeft = 0;
+let initialTop = 0;
+
+const bringToFront = (device) => {
+  maxZIndex.value++;
+  device.zIndex = maxZIndex.value;
+};
+
+const startDrag = (event, device) => {
+  // 如果点击的是内部按钮等交互元素，不触发拖拽
+  if (event.target.closest('button')) return;
+  
+  draggedDevice = device;
+  bringToFront(device);
+  
+  startX = event.clientX;
+  startY = event.clientY;
+  initialLeft = device.x;
+  initialTop = device.y;
+  
+  event.preventDefault(); // 阻止默认行为防止选中文本
+};
+
+const onMouseMove = (event) => {
+  if (!draggedDevice) return;
+  
+  const dx = event.clientX - startX;
+  const dy = event.clientY - startY;
+  
+  draggedDevice.x = initialLeft + dx;
+  draggedDevice.y = initialTop + dy;
+};
+
+const stopDrag = () => {
+  draggedDevice = null;
+};
+
+// 画布平移 (这里我们让画布不可平移，鼠标只用于拖拽设备)
+const startPan = () => {
+  // 阻止在画布背景上开始拖动，因为图片中的背景是静态的
+};
+
+onMounted(() => {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    isDark.value = true;
+    document.documentElement.classList.add('dark');
   }
-}
+});
 </script>
 
 <style scoped>
-/* 仅保留无法用Tailwind实现的特殊样式 */
-.workspace {
-  /* background-image: 
-    linear-gradient(rgba(229, 231, 235, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(229, 231, 235, 0.5) 1px, transparent 1px); */
-  background-size: 20px 20px;
+/* 移除点阵背景，使用纯白色背景 */
+.bg-white {
+  background-color: white;
 }
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .workspace {
-    height: calc(100vh - 200px) !important;
-  }
+.dark .bg-gray-900 {
+  background-color: #1a202c; /* Tailwind gray-900 */
 }
 </style>
