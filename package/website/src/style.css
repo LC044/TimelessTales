@@ -7,8 +7,10 @@
 }
 
 /* 定义动态颜色类，映射到 JS 注入的变量 */
+.text-primary { color: var(--theme-primary); }
 .text-primary-600 { color: var(--theme-primary); }
 .text-primary-500 { color: var(--theme-primary); } /* 近似处理 */
+.bg-primary{ background-color: var(--theme-primary); }
 .bg-primary-600 { background-color: var(--theme-primary); }
 .bg-primary-500 { background-color: var(--theme-primary); }
 .border-primary-500 { border-color: var(--theme-primary); }
@@ -27,6 +29,14 @@
 .dark .hover\:text-primary-500:hover {
     color: var(--theme-primary);
     filter: brightness(1.2); /* 在深色背景下稍微增亮 */
+}
+/* 关键修复：group-hover 规则（正确选择器） */
+.group:hover .group-hover\:bg-primary-500 {
+  background-color: var(--theme-primary) !important;
+}
+
+.group:hover .group-hover\:text-primary-500 {
+  color: var(--theme-primary) !important;
 }
 
 /* RGB 版本的背景色，用于支持 opacity (bg-primary-50 等) */

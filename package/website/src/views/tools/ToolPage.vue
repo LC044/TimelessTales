@@ -21,7 +21,7 @@
           <section>
             <!-- 分类标题 -->
             <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 group">
-              <span class="category-icon w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+              <span class="category-icon w-8 h-8 rounded-lg flex items-center justify-center bg-primary/10 text-primary-500 group-hover:scale-110 transition-transform">
                 <i :class="category.icon"></i>
               </span>
               {{ category.name }}
@@ -41,12 +41,12 @@
                 >
                   <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 flex h-full transform group-hover:-translate-y-1">
                     <!-- 左侧图标区域 -->
-                    <div class="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mr-4 shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <div class="w-12 h-12 rounded-lg bg-primary/10 text-primary-500 flex items-center justify-center mr-4 shrink-0 group-hover:bg-primary-500 group-hover:text-white transition-colors">
                       <i :class="tool.icon" class="text-5xl"></i>
                     </div>
                     <!-- 右侧文本区域 -->
                     <div class="flex flex-col flex-grow">
-                      <h3 class="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
+                      <h3 class="text-lg font-semibold mb-1 group-hover:text-primary-500 transition-colors">
                         {{ tool.name }}
                       </h3>
                       <p class="text-gray-500 dark:text-gray-400 text-sm flex-grow">
