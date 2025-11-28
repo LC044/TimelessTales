@@ -10,17 +10,17 @@
         <!-- 社交链接/图标列表 -->
         <ul class="social-links flex gap-4 p-0 mt-4 mb-0 list-none">
           <li class="flex items-center justify-center w-10 h-10 text-4xl rounded-full">
-            <a href="https://github.com/LC044" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-pink-400">
+            <a href="https://github.com/LC044" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-primary-500">
               <i class="mgc_github_2_line"></i>
             </a>
           </li>
           <li class="flex items-center justify-center w-10 h-10 text-4xl rounded-full">
-            <a href="mailto:sixyuan044@gmail.com" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-pink-400">
+            <a href="mailto:sixyuan044@gmail.com" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-primary-500">
               <i class="mgc_mailbox_line"></i>
             </a>
           </li>
           <li class="flex items-center justify-center w-10 h-10 text-4xl rounded-full">
-            <a href="https://blog.siyuan.ink" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-pink-400">
+            <a href="https://blog.siyuan.ink" target="_blank" rel="noreferrer" class="text-gray-600 dark:text-gray-300 transition-all duration-200 hover:scale-110 hover:text-primary-500">
               <i class="mgc_comment_2_line"></i>
             </a>
           </li>

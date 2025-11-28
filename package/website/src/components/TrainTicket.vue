@@ -96,17 +96,21 @@
               </div>
             </div>
           </div>
-          <p class="muted text-[30px]">仅供当日乘车<br></p>
-          <p class="muted text-[30px]">仅供报销使用</p>
+          <p class="muted text-[30px]"><br></p>
+          <p class="muted text-[30px]">仅供纪念使用</p>
           <!-- 详情与二维码 -->
           <div class="detail-area relative grid grid-cols-[1fr_170px] gap-[16px]">
             <div>
 
               <div class="code">{{ idNumber }} {{ passengerName }}</div>
               <!-- 虚线框，单个虚线变长 -->
-              <div class="details text-[24px] text-center mt-[-6px] ">
+              <div v-if="showHeader()" class="details text-[24px] text-center mt-[-6px] ">
                 <p>报销凭证 遗失不补</p>
                 <p>退票改签时须交回车站</p>
+              </div>
+              <div v-else class="details text-[24px] text-center mt-[-6px] ">
+                <p>买票请到12306 发货请到95306</p>
+                <p>中国铁路祝您旅途愉快</p>
               </div>
               <div class="footer-red" v-if="!showHeader()">
                 <div class="text-[30px]">{{ footerInfo }}</div>
