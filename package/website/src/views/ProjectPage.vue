@@ -289,8 +289,9 @@ const fetchGithubData = async (url: string) => {
     const response = await fetch(url)
     if (!response.ok) throw new Error(`请求失败: ${response.status}`)
     return await response.json()
-  } catch (err: any) {
-    errorMsg.value = `获取数据失败: ${err.message}，请稍后重试`
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err)
+    errorMsg.value = `获取数据失败: ${message}，请稍后重试`
     console.error('GitHub API请求错误:', err)
     return null
   }

@@ -23,4 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 test*
-*.map
+*.vue.js
+*.vue.js.map
