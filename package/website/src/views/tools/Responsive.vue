@@ -208,8 +208,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+
+interface Device {
+  key: string;
+  name: string;
+  icon: string;
+  visible: boolean;
+  x: number;
+  y: number;
+  zIndex: number;
+  canRotate: boolean;
+  isLandscape: boolean;
+}
 
 const inputUrl = ref('https://siyuan.ink');
 const currentUrl = ref('');
@@ -217,7 +229,7 @@ const isDark = ref(false);
 const maxZIndex = ref(10); // 用于管理层级
 
 // 根据图片调整的初始设备状态和位置
-const initialDevices = [
+const initialDevices: Device[] = [
   // Desktop - 中心偏右后方
   { key: 'desktop', name: 'Desktop', icon: "mgc_computer_line", visible: true, x: 300, y: 100, zIndex: 1, canRotate: false, isLandscape: true },
   // Laptop - 右下方，部分在Desktop下方
@@ -228,7 +240,7 @@ const initialDevices = [
   { key: 'mobile', name: 'Mobile', icon: "mgc_cellphone_line", visible: true, x: 380, y: 450, zIndex: 4, canRotate: true, isLandscape: false },
 ];
 
-const devices = reactive(JSON.parse(JSON.stringify(initialDevices)));
+const devices = reactive<Device[]>(JSON.parse(JSON.stringify(initialDevices)));
 
 // --- 核心功能逻辑 ---
 
@@ -239,13 +251,7 @@ const loadUrl = () => {
   currentUrl.value = url;
 };
 
-const toggleTheme = () => {
-  isDark.value = !isDark.value;
-  if (isDark.value) document.documentElement.classList.add('dark');
-  else document.documentElement.classList.remove('dark');
-};
-
-const toggleDeviceVisibility = (device) => {
+const toggleDeviceVisibility = (device: Device) => {
   device.visible = !device.visible;
   if (device.visible) bringToFront(device);
 };
@@ -260,26 +266,26 @@ const resetLayout = () => {
   });
 };
 
-const rotateDevice = (device) => {
+const rotateDevice = (device: Device) => {
   device.isLandscape = !device.isLandscape;
 };
 
 // --- 拖拽系统实现 ---
 
-let draggedDevice = null;
+let draggedDevice: Device | null = null;
 let startX = 0;
 let startY = 0;
 let initialLeft = 0;
 let initialTop = 0;
 
-const bringToFront = (device) => {
+const bringToFront = (device: Device) => {
   maxZIndex.value++;
   device.zIndex = maxZIndex.value;
 };
 
-const startDrag = (event, device) => {
+const startDrag = (event: MouseEvent, device: Device) => {
   // 如果点击的是内部按钮等交互元素，不触发拖拽
-  if (event.target.closest('button')) return;
+  if ((event.target as HTMLElement).closest('button')) return;
   
   draggedDevice = device;
   bringToFront(device);
@@ -292,7 +298,7 @@ const startDrag = (event, device) => {
   event.preventDefault(); // 阻止默认行为防止选中文本
 };
 
-const onMouseMove = (event) => {
+const onMouseMove = (event: MouseEvent) => {
   if (!draggedDevice) return;
   
   const dx = event.clientX - startX;

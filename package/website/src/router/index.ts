@@ -1,6 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
-
-
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
 import HomePage from '@/views/HomePage.vue';
 import BlogPage from '@/views/BlogPage.vue';
@@ -11,7 +9,7 @@ import TrainTicketGengrate from '@/views/tools/TrainTicketGengrate.vue';
 import ToolPage from '@/views/tools/ToolPage.vue';
 // import ThoughtPage from '@/views/ThoughtPage.vue';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: HomePage },
   { path: '/blog', component: BlogPage },
   { path: '/more', component: More },
@@ -19,12 +17,25 @@ const routes = [
   { path: '/tools', component: ToolPage },
   { path: '/tools/responsive', component: Responsive },
   { path: '/tools/trainticket', component: TrainTicketGengrate },
+  // Annual Report (Standalone Layout)
+  {
+    path: '/annual-report',
+    name: 'AnnualReport',
+    component: () => import('@/views/annual-report/index.vue'),
+    meta: { layout: 'blank', title: '年度回忆录' },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+declare global {
+  interface Window {
+    _hmt: any[];
+  }
+}
 
 router.beforeEach((to, from, next) => {
  if (to.path) {

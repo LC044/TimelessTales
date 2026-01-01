@@ -30,7 +30,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 
 export default {
@@ -67,7 +67,8 @@ export default {
     const dragging = ref(false)
     const dragStart = ref({ x: 0, y: 0 })
     const startPos = ref({ x: 0, y: 0 })
-    const el = ref(null)
+    const el = ref<HTMLElement | null>(null)
+    const iframeEl = ref<HTMLIFrameElement | null>(null)
 
     const deviceStyle = computed(() => {
       // scale为当前实际宽度除以viewW得到的比例
@@ -111,18 +112,20 @@ export default {
 
     const validUrl = computed(() => !!sanitizedSrc.value)
 
-    function startDrag(e) {
+    function startDrag(e: PointerEvent) {
       // pointerdown already captured on handle
       dragging.value = true
       dragStart.value = { x: e.clientX, y: e.clientY }
       startPos.value = { x: props.initX, y: props.initY }
       // capture pointer to this element so we continue receiving pointermove/up
-      e.target.setPointerCapture(e.pointerId)
-      window.addEventListener('pointermove', onMove)
-      window.addEventListener('pointerup', onUp)
+      if (e.target instanceof Element) {
+        e.target.setPointerCapture(e.pointerId)
+      }
+      window.addEventListener('pointermove', onMove as any)
+      window.addEventListener('pointerup', onUp as any)
     }
 
-    function onMove(e) {
+    function onMove(e: PointerEvent) {
       if (!dragging.value) return
       const dx = e.clientX - dragStart.value.x
       const dy = e.clientY - dragStart.value.y
@@ -131,16 +134,20 @@ export default {
       ctx.emit('update:position', { x: pos.value.x, y: pos.value.y })
     }
 
-    function endDrag(e) {
+    function endDrag(e: PointerEvent) {
       // called by pointerup handlers
       dragging.value = false
-      try { e.target.releasePointerCapture(e.pointerId) } catch (err) {}
+      try { 
+        if (e.target instanceof Element) {
+          e.target.releasePointerCapture(e.pointerId) 
+        }
+      } catch (err) {}
     }
 
-    function onUp(e) {
+    function onUp(e: PointerEvent) {
       dragging.value = false
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointermove', onMove as any)
+      window.removeEventListener('pointerup', onUp as any)
     }
 
     function resetPosition() {

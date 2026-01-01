@@ -4,9 +4,9 @@
     </div>
   </template>
   
-  <script setup>
-  const createRipple = (event) => {
-    const button = event.currentTarget;
+  <script setup lang="ts">
+  const createRipple = (event: MouseEvent) => {
+    const button = event.currentTarget as HTMLElement;
     const circle = document.createElement("span");
     const diameter = Math.max(button.clientWidth, button.clientHeight);
     const radius = diameter / 2;

@@ -135,7 +135,11 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts">
+const validTypes = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '']
+</script>
+
+<script setup lang="ts">
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
@@ -143,7 +147,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 const BASE_WIDTH = 856
 const BASE_HEIGHT = 540
 
-const wrapper = ref(null)
+const wrapper = ref<HTMLElement | null>(null)
 const scale = ref(1)
 const exporting = ref(false)
 
@@ -187,9 +191,8 @@ const props = defineProps({
   discountType: {
     type: [String, Array],
     default: '',
-    validator: (value) => {
+    validator: (value: any) => {
       // 允许的优惠类型（支持单个或数组）
-      const validTypes = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '']
       if (Array.isArray(value)) {
         return value.every(item => validTypes.includes(item))
       }
@@ -211,8 +214,8 @@ const dateTime = computed(() => {
 
 // 修改：计算优惠显示文字（支持多个）
 const discountTexts = computed(() => {
-  const texts = []
-  const types = Array.isArray(props.discountType) ? props.discountType : props.discountType ? [props.discountType] : []
+  const texts: string[] = []
+  const types = (Array.isArray(props.discountType) ? props.discountType : props.discountType ? [props.discountType] : []) as string[]
   
   types.forEach(type => {
     switch(type) {

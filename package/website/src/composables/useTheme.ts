@@ -1,9 +1,15 @@
-// src/composables/useTheme.js
-
-import { ref, watch, computed, provide, inject, onMounted, onUnmounted  } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted, provide, inject, type InjectionKey } from 'vue';
 
 // ----------------- 主题配置 -----------------
-export const themeColors = [
+export interface ThemeColor {
+  name: string;
+  label: string;
+  primary: string;
+  secondary: string;
+  rgb: string;
+}
+
+export const themeColors: ThemeColor[] = [
   { name: 'sky', label: '天空蓝', primary: '#1E88E5', secondary: '#64B5F6', rgb: '30, 136, 229' },
   { name: 'emerald', label: '森系绿', primary: '#10B981', secondary: '#34D399', rgb: '16, 185, 129' },
   { name: 'violet', label: '梦幻紫', primary: '#8B5CF6', secondary: '#A78BFA', rgb: '139, 92, 246' },
@@ -11,19 +17,16 @@ export const themeColors = [
   { name: 'amber', label: '复古橘', primary: '#F59E0B', secondary: '#FBBF24', rgb: '245, 158, 11' },
 ];
 
-// 唯一的 Injection Key，防止冲突
-const ThemeKey = Symbol('theme'); 
-
 // ----------------- 核心逻辑 -----------------
 export function useTheme() {
 // 状态初始化（从 localStorage 读取或默认值）
   // 🚨 新增：记录用户选择的模式
-  const savedMode = localStorage.getItem('theme-mode') || 'auto'; 
-  const currentMode = ref(savedMode); 
+  const savedMode = (localStorage.getItem('theme-mode') as 'auto' | 'light' | 'dark') || 'auto'; 
+  const currentMode = ref<'auto' | 'light' | 'dark'>(savedMode); 
   
   const savedColor = localStorage.getItem('theme-color') || 'sky';
   const initialTheme = themeColors.find(t => t.name === savedColor) || themeColors[0];
-  const currentTheme = ref(initialTheme);
+  const currentTheme = ref<ThemeColor>(initialTheme);
   
 // 引入一个响应式变量，用于在系统主题改变时强制触发 isDarkMode 重新计算
   const systemPreferenceChange = ref(0); 
@@ -49,7 +52,7 @@ export function useTheme() {
   });
 
   // 2. 切换主题色及持久化 (setTheme 保持不变)
-  const setTheme = (themeObj) => {
+  const setTheme = (themeObj: ThemeColor) => {
     currentTheme.value = themeObj;
     localStorage.setItem('theme-color', themeObj.name);
   };
@@ -58,7 +61,7 @@ export function useTheme() {
   onMounted(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
-    const listener = (e) => {
+    const listener = () => {
       // 只有在用户选择 'auto' 模式时才响应系统变化
       if (currentMode.value === 'auto') {
         // 🚨 触发响应式更新：改变 ref 的值，isDarkMode 就会立即重新计算
@@ -78,15 +81,12 @@ export function useTheme() {
   // --- 关键修改点 END ---
 
   // 1. 切换模式 (setMode 保持不变)
-  const setMode = (mode) => {
+  const setMode = (mode: 'auto' | 'light' | 'dark') => {
     currentMode.value = mode;
     localStorage.setItem('theme-mode', mode);
     // 🚨 当用户手动切换模式后，强制重新计算一次，以防 mediaQuery 监听器还未初始化
     systemPreferenceChange.value++;
   };
-
-  // 2. 切换主题色 (setTheme 保持不变)
-  // ...
 
   // 3. 实时应用 'dark' class 到 HTML 根元素 (watch 保持不变)
   watch(isDarkMode, (newVal) => {
@@ -94,32 +94,29 @@ export function useTheme() {
     root.classList.toggle('dark', newVal);
   }, { immediate: true });
   
-  // ... (返回对象时，将 setMode 和 currentMode 添加进去)
   return {
     isDarkMode, // computed
     currentMode, // ref, 用户选择的模式
     currentTheme,
-    themeStyle,
-    themeColors,
-    setMode, // 🚨 新增函数
+    setMode,
     setTheme,
+    themeStyle,
+    themeColors
   };
 }
 
-// ----------------- Provider/Consumer Functions -----------------
+const ThemeKey = Symbol('theme') as InjectionKey<ReturnType<typeof useTheme>>;
 
-// 根组件调用此函数来提供主题
 export function provideTheme() {
   const theme = useTheme();
   provide(ThemeKey, theme);
   return theme;
 }
 
-// 任何子组件调用此函数来注入主题
 export function injectTheme() {
   const theme = inject(ThemeKey);
   if (!theme) {
-    console.error('Theme not provided. Did you call provideTheme() in the root component?');
+    throw new Error('injectTheme must be used within a component that calls provideTheme');
   }
   return theme;
 }

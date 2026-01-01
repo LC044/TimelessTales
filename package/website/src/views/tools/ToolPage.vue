@@ -64,14 +64,27 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+interface Tool {
+  name: string;
+  icon: string;
+  description: string;
+  url: string;
+}
+
+interface ToolCategory {
+  name: string;
+  icon: string;
+  tools: Tool[];
+}
 
 // 搜索功能
 const searchQuery = ref('');
 
 // 工具数据 - 按类别分组
-const toolCategories = ref([
+const toolCategories = ref<ToolCategory[]>([
   {
     name: "开发工具",
     icon: "mgc_code_line",

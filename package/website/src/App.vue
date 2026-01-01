@@ -15,7 +15,7 @@
   <Footer />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavBar from './components/NavBar.vue'
 import Footer from './components/Footer.vue';
 import HomePage from './views/HomePage.vue'
@@ -26,7 +26,6 @@ const {
   currentTheme,
   themeStyle,
   themeColors,
-  toggleDarkMode,
   setTheme
 } = provideTheme();
 // 这行代码将主题状态注入到整个应用树中，供所有子组件使用。

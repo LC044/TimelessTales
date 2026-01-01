@@ -1,7 +1,15 @@
 import { defineStore } from 'pinia';
 
+interface BlogState {
+  visit: number;
+  visitor: number;
+  timelineCache: any | null;
+  metaCache: any | null;
+  cacheTime: number;
+}
+
 export const useCounterStore = defineStore('counter', {
-  state: () => ({
+  state: (): BlogState => ({
     visit: 0,
     visitor: 0,
     // 新增缓存状态
@@ -10,19 +18,19 @@ export const useCounterStore = defineStore('counter', {
     cacheTime: 0         // 缓存时间戳（可选，用于过期控制）
   }),
   actions: {
-    setVisit(visit) {
+    setVisit(visit: number) {
       this.visit = visit;
     },
-    setVisitor(visitor) {
+    setVisitor(visitor: number) {
       this.visitor = visitor;
     },
     // 新增：缓存时间线数据
-    setTimelineCache(data) {
+    setTimelineCache(data: any) {
       this.timelineCache = data;
       this.cacheTime = Date.now();
     },
     // 新增：缓存元数据
-    setMetaCache(data) {
+    setMetaCache(data: any) {
       this.metaCache = data;
     },
     // 新增：清除缓存（支持手动刷新）

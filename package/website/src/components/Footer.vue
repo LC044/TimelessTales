@@ -45,7 +45,7 @@
   </footer>
 </template>
 
-<script>
+<script lang="ts">
 import { ref,onMounted } from 'vue';
 import { useCounterStore } from '@/api/blog' 
 import axios from 'axios'

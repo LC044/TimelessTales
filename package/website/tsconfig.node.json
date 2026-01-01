@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "composite": true,           // 支持项目引用（和 tsconfig.json 关联）
+    "skipLibCheck": true,
+    "module": "ESNext",          // Node 支持 ES 模块
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  // 只作用于 Node 相关文件（vite.config.ts、node_modules 等）
+  "include": ["vite.config.ts", "package.json", "tsconfig.json"]
+}

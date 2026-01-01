@@ -70,14 +70,11 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
 import ToolCard from "../components/ToolCard.vue"; // 引入卡片组件
 defineProps({
   msg: String,
 })
-
-const count = ref(0)
 </script>
 
 <style scoped>

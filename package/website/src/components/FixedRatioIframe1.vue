@@ -13,7 +13,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
   }
 })
 
-const wrapper = ref(null)
+const wrapper = ref<HTMLElement | null>(null)
 const scale = ref(1)
 
 const updateScale = () => {

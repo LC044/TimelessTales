@@ -256,7 +256,7 @@
                     v-model="form.footerInfo" 
                     type="text" 
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                    placeholder="例：65773311920607K104567　北京南售"
+                    placeholder="例：65773311920607K104567 北京南售"
                     required
                   >
                 </div>
@@ -366,13 +366,35 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, watch, computed } from 'vue';
+<script setup lang="ts">
+import { ref, reactive, watch, computed, type ComponentPublicInstance } from 'vue';
 import TrainTicket from '@/components/TrainTicket.vue';
 import { toPng } from "html-to-image";
+
+interface TicketForm {
+  serial: string;
+  gate: string;
+  fromStation: string;
+  fromPinyin: string;
+  toStation: string;
+  toPinyin: string;
+  trainCode: string;
+  dateTime: string;
+  carriage: string;
+  seatNumber: string;
+  price: string;
+  seatType: string;
+  idNumber: string;
+  passengerName: string;
+  footerInfo: string;
+  discountType: string;
+  berthType: string;
+  berthNumber: string;
+}
+
 const selectedStyle = ref('blue');
 // 表单初始数据（保持不变）
-const form = reactive({
+const form = reactive<TicketForm>({
   serial: '283K104567',
   gate: '5A',
   fromStation: '上海虹桥',
@@ -394,7 +416,7 @@ const form = reactive({
 });
 
 // 定义卧铺类型列表
-const sleeperTypes = ref([
+const sleeperTypes = ref<string[]>([
   '软卧', '硬卧', '动卧', '高级软卧', '一等卧', '二等卧'
 ]);
 
@@ -413,15 +435,18 @@ const finalSeatNumber = computed(() => {
   }
   return form.seatNumber;
 });
+// use finalSeatNumber
+console.log(finalSeatNumber.value);
 
 // 火车票组件ref
-const hiddenTicketRef = ref(null);
+const hiddenTicketRef = ref<ComponentPublicInstance | null>(null);
 
 // 保存图片逻辑（保持不变）
 const handleSaveImage = async () => {
   try {
     const node = hiddenTicketRef.value?.$el;
-    const dataUrl = await toPng(node, {
+    if (!node) return;
+    const dataUrl = await toPng(node as HTMLElement, {
       cacheBust: true,
       backgroundColor: "#fff",
       quality: 1,
@@ -440,10 +465,11 @@ const handleSaveImage = async () => {
 };
 
 // 日期时间格式化（补充缺失的方法）
-const formatDateTime = (e) => {
-  if (e.target.value) {
+const formatDateTime = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.value) {
     // 转换为YYYY-MM-DD HH:mm格式
-    form.dateTime = e.target.value.replace('T', ' ');
+    form.dateTime = target.value.replace('T', ' ');
   }
 };
 </script>

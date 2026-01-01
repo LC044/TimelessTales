@@ -85,8 +85,8 @@
   </header>
 </template>
 
-<script setup>
-import { injectTheme } from '@/composables/useTheme.js'
+<script setup lang="ts">
+import { injectTheme } from '@/composables/useTheme'
 import { ref } from 'vue'
 import {
   Palette, Sun, Moon, Check
@@ -94,8 +94,13 @@ import {
 import { useRoute } from 'vue-router'
 import { onClickOutside } from '@vueuse/core' 
 
+interface NavLink {
+  label: string;
+  href: string;
+}
+
 // 导航数据
-const navLinks = [
+const navLinks: NavLink[] = [
   { label: '首页', href: '/' },
   { label: '文档', href: '/blog' },
   { label: '项目', href: '/project' },
@@ -114,7 +119,7 @@ const {
 } = injectTheme();
 
 const showThemeMenu = ref(false);
-const themeMenuRef = ref(null); // 菜单容器的引用
+const themeMenuRef = ref<HTMLElement | null>(null); // 菜单容器的引用
 
 // 实现：点击菜单外部自动关闭
 onClickOutside(themeMenuRef, () => {

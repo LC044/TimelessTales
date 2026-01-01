@@ -11,10 +11,15 @@
     </div>
   </template>
   
-  <script setup>
+  <script setup lang="ts">
   import { ref } from 'vue'
   
-  const loveEvents = ref([
+  interface LoveEvent {
+    date: string;
+    description: string;
+  }
+
+  const loveEvents = ref<LoveEvent[]>([
     { date: "2023.05.20", description: "💖 我们在一起啦！" },
     { date: "2023.08.14", description: "✈️ 第一次旅行，三亚的海真的美！第一次旅行，三亚的海真的美！第一次旅行，三亚的海真的美！第一次旅行，三亚的海真的美！第一次旅行，三亚的海真的美！" },
     { date: "2023.12.24", description: "🎄 第一个圣诞节，一起烤了蛋糕！" },

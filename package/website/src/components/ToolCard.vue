@@ -18,14 +18,14 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-    icon: String,   // 卡片首字母图标
-    title: String,  // 工具名称
-    desc: String,   // 工具描述
-    linkText: String,// 链接文字
-    link:String
-});
+<script setup lang="ts">
+const props = defineProps<{
+    icon?: string;   // 卡片首字母图标
+    title?: string;  // 工具名称
+    desc?: string;   // 工具描述
+    linkText?: string;// 链接文字
+    link?: string;
+}>();
 </script>
 
 <style scoped>

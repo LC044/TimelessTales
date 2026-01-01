@@ -1,16 +1,11 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss'
+
 export default {
-  content: [],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-module.exports = {
   darkMode: 'class',
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
-  theme: { extend: {
-    colors: {
+  theme: {
+    extend: {
+      colors: {
         // 1. 纯色值
         'light-bg': '#FAFAFA', // 自定义主色
         'light-bg1': '#f8fafc',
@@ -26,7 +21,7 @@ module.exports = {
         // 2. 深色模式背景
         'dark-gray-blue': '#282C34',
         'dark-navy': '#1E293B',
-        'dark-warm-gray': '#333333',
+        // 'dark-warm-gray': '#333333', // Duplicate key in original, using the one below
         
         // 3. 浅色背景下前景色
         'light-dark-gray': '#333333',
@@ -34,7 +29,7 @@ module.exports = {
         'light-blue-gray': '#34495E',
 
         // 4. 深色背景下前景色
-        'dark-warm-gray': '#E0E0E0', // 注意：与深色背景的“暖深灰”同名但色值不同？可调整为“dark-text-warm-gray”避免冲突
+        'dark-warm-gray': '#E0E0E0', 
         'dark-blue-gray': '#CBD5E1',
         'dark-gray-yellow': '#E6E2AF',
         
@@ -48,7 +43,7 @@ module.exports = {
         'accent-natural-gray-blue': '#78909C',
         'accent-natural-light-cyan': '#5F9EA0',
       },
-  } },
+    }
+  },
   plugins: [],
-}
-
+} satisfies Config

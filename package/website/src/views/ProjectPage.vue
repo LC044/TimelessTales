@@ -162,18 +162,86 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import ToolCard from "../components/ToolCard.vue";
 
+// Interfaces
+interface GitHubUser {
+  login: string;
+  id: number;
+  avatar_url: string;
+  html_url: string;
+  name: string;
+  blog: string;
+  location: string;
+  bio: string;
+  public_repos: number;
+  followers: number;
+  following: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface GitHubRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  html_url: string;
+  description: string;
+  stargazers_count: number;
+  forks_count: number;
+  language: string;
+  updated_at: string;
+  pushed_at: string;
+  created_at: string;
+  commit_count?: number;
+}
+
+interface Contribution {
+  type: string;
+}
+
+interface ContributionDay {
+  contributions: Contribution[];
+}
+
+interface ContributionWeek {
+  contributionDays: ContributionDay[];
+}
+
+interface ContributionCalendar {
+  weeks: ContributionWeek[];
+}
+
+interface ContributionsCollection {
+  contributionCalendar: ContributionCalendar;
+}
+
+interface ContributionStats {
+  contributionsCollection: ContributionsCollection;
+}
+
+interface ToolItem {
+  icon: string;
+  title: string;
+  desc: string;
+  linkText: string;
+  link: string;
+}
+
+interface ToolGroup {
+  category: string;
+  isExpanded: boolean;
+  tools: ToolItem[];
+}
+
 // 配置项
-const GITHUB_USERNAME = 'LC044' // GitHub用户名
 const MAX_RECENT_REPOS = 6 // 最多显示的最近仓库数量
 
 // 状态管理
-const userInfo = ref({}) // 用户基本信息
-const allRepos = ref([]) // 所有仓库数据
-const contributionStats = ref(null) // 贡献统计（包含最近一年提交）
+const userInfo = ref<Partial<GitHubUser>>({}) // 用户基本信息
+const allRepos = ref<GitHubRepo[]>([]) // 所有仓库数据
 const isLoading = ref(true)
 const errorMsg = ref('')
 
@@ -194,7 +262,7 @@ const totalForks = computed(() => {
 // 计算属性：最近活跃仓库（按更新时间排序）
 const recentRepos = computed(() => {
   return [...allRepos.value]
-    .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+    .sort((a, b) => new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime())
     .slice(0, MAX_RECENT_REPOS)
 })
 
@@ -206,17 +274,8 @@ const totalCommits = computed(() => {
   }, 0)
 })
 
-// 新增：最近一年的提交次数（从贡献统计中获取）
-const yearlyCommits = computed(() => {
-  // 筛选出最近一年的 commit 类型贡献（排除 PR、issue 等）
-  return contributionStats.value?.contributionsCollection?.contributionCalendar?.weeks
-    ?.flatMap(week => week.contributionDays)
-    ?.flatMap(day => day.contributions.filter(c => c.type === 'COMMIT'))
-    ?.length || 0
-})
-
 // 工具函数：格式化日期
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
@@ -225,53 +284,12 @@ const formatDate = (dateString) => {
   }).replace(/\//g, '-')
 }
 
-const fetchContributionStats = async () => {
-  const graphqlQuery = `
-    query {
-      user(login: "${GITHUB_USERNAME}") {
-        contributionsCollection(from: "${new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()}") {
-          contributionCalendar {
-            weeks {
-              contributionDays {
-                contributions {
-                  type
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-
-  try {
-    const response = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 可选：添加 GitHub Token 提高速率限制（无 Token 每小时60次，有则5000次）
-        // 'Authorization': 'bearer YOUR_GITHUB_TOKEN'
-      },
-      body: JSON.stringify({ query: graphqlQuery })
-    })
-
-    const data = await response.json()
-    if (data.errors) throw new Error(data.errors[0].message)
-    return data.data
-  } catch (err) {
-    errorMsg.value = `获取贡献数据失败: ${err.message}`
-    console.error('GraphQL请求错误:', err)
-    return null
-  }
-}
-
-// 工具函数：获取GitHub API数据
-const fetchGithubData = async (url) => {
+const fetchGithubData = async (url: string) => {
   try {
     const response = await fetch(url)
     if (!response.ok) throw new Error(`请求失败: ${response.status}`)
     return await response.json()
-  } catch (err) {
+  } catch (err: any) {
     errorMsg.value = `获取数据失败: ${err.message}，请稍后重试`
     console.error('GitHub API请求错误:', err)
     return null
@@ -290,7 +308,7 @@ onMounted(async () => {
     isLoading.value = false
     return
   }
-  userInfo.value = data.user_info
+  userInfo.value = data.user_info as GitHubUser
 
   // 2. 获取用户仓库列表（只获取公开仓库）
   // const reposData = await fetchGithubData(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`)
@@ -298,20 +316,16 @@ onMounted(async () => {
     allRepos.value = data.repos // 过滤掉fork的仓库
   }
 
-  // 3. 获取贡献统计（GraphQL API）
-  // const contributionData = await fetchContributionStats()
-  // contributionStats.value = contributionData
-
   isLoading.value = false
 })
 
 // 原有工具组逻辑
 const DEFAULT_EXPANDED = true;
-const toggleExpand = (group) => {
+const toggleExpand = (group: ToolGroup) => {
   group.isExpanded = !group.isExpanded;
 };
 
-const toolGroups = ref([
+const toolGroups = ref<ToolGroup[]>([
   {
     category: "PC工具",
     isExpanded: DEFAULT_EXPANDED,
@@ -360,26 +374,12 @@ const toolGroups = ref([
       {
         icon: "/icon/社交聊天.svg",
         title: "DB_Chat",
-        desc: "课程大作业——使用pyqt开发聊天程序",
+        desc: "一款局域网聊天软件，基于UDP广播实现局域网内设备发现，TCP实现聊天消息传输",
         linkText: "查看详情",
         link: "https://github.com/LC044/DB_Chat"
-      },
-      {
-        icon: "/icon/测试.svg",
-        title: "MiniC",
-        desc: "课程大作业——MiniC语言编译器前端，生成抽象语法树，产生线性IR，生成控制流图",
-        linkText: "查看详情",
-        link: "https://github.com/LC044/MiniC"
-      },
-      {
-        icon: "/icon/时钟.svg",
-        title: "network-clock ",
-        desc: "esp32+python打造个性化桌面摆件",
-        linkText: "查看详情",
-        link: "https://github.com/LC044/network-clock"
       }
     ]
-  },
+  }
 ]);
 </script>
 

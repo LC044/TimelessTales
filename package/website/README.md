@@ -26,3 +26,16 @@ pnpm run dev
 pnpm run build
 ```
 
+## 类型检查
+
+```bash
+pnpm run type-check
+```
+
+## TypeScript 迁移说明
+
+本项目已从 JavaScript 全面迁移至 TypeScript。
+- 所有 `.js` 文件已转换为 `.ts`。
+- Vue 组件已使用 `<script setup lang="ts">`。
+- 添加了 strict 模式的 `tsconfig.json`。
+- 构建流程包含了类型检查 (`vue-tsc`).

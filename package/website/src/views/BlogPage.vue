@@ -37,10 +37,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref,onMounted } from 'vue';
 import { useCounterStore } from '@/api/blog' // 导入Pinia Store
 import axios from 'axios'
+interface Article {
+  date: string;
+  title: string;
+  link: string;
+}
+
+interface YearGroup {
+  year: string;
+  isExpanded: boolean;
+  articles: Article[];
+}
+
 const category_num = ref(6)
 const article_num = ref(21)
 const tag_num = ref(2)
@@ -51,7 +63,7 @@ const DEFAULT_EXPANDED = true;
 const CACHE_EXPIRE_TIME = 5 * 60 * 1000; // 300000ms = 5分钟
 // 获取Store实例
 const counterStore = useCounterStore()
-const years = ref([
+const years = ref<YearGroup[]>([
   {
     year: '2025',
     isExpanded: DEFAULT_EXPANDED, // 每年分组的展开状态，默认展开
@@ -78,6 +90,7 @@ const years = ref([
   },
   {
     year: '2024',
+    isExpanded: DEFAULT_EXPANDED,
     articles: [
       { date: '11-12', title: '使用 PyQt5 实现自定义可拖拽列表组件', link: 'https://blog.siyuan.ink/post/12' },
       { date: '11-11', title: 'Python批量合并多个PDF', link: 'https://blog.siyuan.ink/post/11' },
@@ -85,6 +98,7 @@ const years = ref([
   },
   {
     year: '2023',
+    isExpanded: DEFAULT_EXPANDED,
     articles: [
       { date: '11-16', title: '看什么看', link: '/what-to-look' },
     ]
@@ -96,7 +110,7 @@ const loading = ref(false)   // 加载状态
 const error = ref(null)      // 错误信息
 
 // 切换展开/折叠状态的方法
-const toggleExpand = (yearGroup) => {
+const toggleExpand = (yearGroup: YearGroup) => {
   yearGroup.isExpanded = !yearGroup.isExpanded;
 };
 
@@ -154,7 +168,7 @@ const fetchData = async (forceRefresh = false) => {
       counterStore.setVisitor(metaCache.visitor);
       counterStore.setMetaCache(metaCache); // 缓存元数据
     }
-  } catch (err) {
+  } catch (err: any) {
     error.value = err.message || '请求失败，请稍后再试';
     console.error('请求错误:', err);
   } finally {
@@ -162,18 +176,25 @@ const fetchData = async (forceRefresh = false) => {
   }
 };
 
+interface RawArticle {
+  createdAt: string;
+  title: string;
+  link: string;
+  [key: string]: any;
+}
+
 // 提取原日期处理逻辑为独立函数（复用）
-const handleTimelineData = (data) => {
+const handleTimelineData = (data: Record<string, RawArticle[]>) => {
   const yearKeys = Object.keys(data);
   const sortedYears = yearKeys.map(Number).sort((a, b) => b - a);
   return sortedYears.map(year => {
     const yearStr = String(year);
-    const articles = data[yearStr].map(article => {
+    const articles = data[yearStr].map((article: RawArticle) => {
       const utcDate = new Date(article.createdAt);
       return {
         ...article,
         date: `${String(utcDate.getMonth() + 1).padStart(2, '0')}-${String(utcDate.getDate()).padStart(2, '0')}`
-      };
+      } as Article;
     });
     return {
       year: yearStr,
