@@ -155,10 +155,10 @@ const initMap = async () => {
   mapStatus.value = 'loading';
   
   try {
-      // 获取地图数据
-      const response = await fetch('/api/medias/geojson?level=city');
-      if (!response.ok) throw new Error('Map fetch failed');
-      const chinaJson = await response.json();
+      const geoJsonUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+      const res = await fetch(geoJsonUrl);
+      if (!res.ok) throw new Error('Map fetch failed');
+      const chinaJson = await res.json();
 
       echarts.registerMap('china', chinaJson);
 
@@ -183,7 +183,7 @@ const renderMap = () => {
     const isMobile = window.innerWidth < 768
     // 构建 regions：只把有数据的城市区域点亮
     const mapData = props.data.locationPoints.map(p => ({
-        name: p.name,
+        name: p.name, // 适配 GeoJSON 中的城市名称（通常带“市”后缀）
         itemStyle: {
             areaColor: p.name === props.data.topCities[0]?.cityName ? '#F97316' : '#FDBA74'
         },

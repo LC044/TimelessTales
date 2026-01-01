@@ -1,24 +1,15 @@
+<!-- src/App.vue -->
 <template>
-  <div 
-    :class="[isDarkMode ? 'dark' : '']" 
-    :style="themeStyle"
-    class="min-h-screen font-sans transition-colors duration-300 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200"
-  >
-    <!-- 顶部导航 -->
-    <NavBar />
-    <div class="container-main dark:bg-gray-900  dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <transition name="fade-slide" mode="out-in">
-        <RouterView />
-      </transition>
-    </div>
-  </div>
-  <Footer />
+  <!-- 动态渲染当前路由对应的布局 -->
+  <component :is="currentLayout" />
 </template>
 
 <script setup lang="ts">
-import NavBar from './components/NavBar.vue'
-import Footer from './components/Footer.vue';
-import HomePage from './views/HomePage.vue'
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+// 导入所有布局组件
+import MainLayout from '@/layouts/MainLayout.vue';
+import BlankLayout from '@/layouts/BlankLayout.vue';
 import { provideTheme } from '@/composables/useTheme';
 // 🚨 关键：确保调用了 provideTheme()
 const {
@@ -26,32 +17,26 @@ const {
   currentTheme,
   themeStyle,
   themeColors,
+  setMode,
   setTheme
 } = provideTheme();
-// 这行代码将主题状态注入到整个应用树中，供所有子组件使用。
+
+const route = useRoute();
+
+// 布局映射：路由 meta.layout 对应实际布局组件
+const layoutMap = {
+  main: MainLayout,   // 主布局（默认）
+  blank: BlankLayout  // 空白布局
+};
+
+// 计算当前要渲染的布局（默认使用主布局）
+const currentLayout = computed(() => {
+  // 从路由 meta 中获取布局类型，未指定则默认主布局
+  const layoutType = route.meta.layout as 'main' | 'blank' || undefined;
+  return layoutMap[layoutType] || MainLayout;
+});
+
 </script>
 
-<style>
-
-.container-main{
-  max-width: 100vw;
-  width: 100%;
-}
-/* 进入时动画 */
-.fade-slide-enter-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-/* 离开时动画 */
-.fade-slide-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-</style>
-
+<!-- 全局样式可移到 src/styles/main.scss，这里清空 -->
+<style></style>

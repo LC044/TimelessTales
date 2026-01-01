@@ -13,4 +13,9 @@
   scrollbar-width: none;
 }
 .scroll-wrapper::-webkit-scrollbar { display: none; }
+
+/* 深度选择器：确保插槽内容（每个Section）都应用 snap-start */
+:deep(> *) {
+  @apply h-screen w-full snap-start snap-always;
+}
 </style>

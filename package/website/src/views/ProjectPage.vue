@@ -328,6 +328,19 @@ const toggleExpand = (group: ToolGroup) => {
 
 const toolGroups = ref<ToolGroup[]>([
   {
+    category: "Web 应用",
+    isExpanded: DEFAULT_EXPANDED,
+    tools: [
+      {
+        icon: "/icon/Report.svg",
+        title: "年度回忆录",
+        desc: "回顾过去一年的精彩瞬间，生成专属的年度报告",
+        linkText: "立即查看",
+        link: "/annual-report"
+      }
+    ]
+  },
+  {
     category: "PC工具",
     isExpanded: DEFAULT_EXPANDED,
     tools: [

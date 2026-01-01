@@ -9,7 +9,13 @@
     <h3 class="text-textDark font-semibold text-lg mb-2">{{ title }}</h3>
     <p class="text-textLight text-sm mb-4">{{ desc }}</p>
     <!-- 链接区（带箭头图标） -->
-    <a :href="link" class="text-accentPink text-sm flex items-center text-primary-500 hover:underline" target="_blank">
+    <RouterLink v-if="isInternal" :to="link" class="text-accentPink text-sm flex items-center text-primary-500 hover:underline">
+      {{ linkText }}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </RouterLink>
+    <a v-else :href="link" class="text-accentPink text-sm flex items-center text-primary-500 hover:underline" target="_blank">
       {{ linkText }}
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -19,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const props = defineProps<{
     icon?: string;   // 卡片首字母图标
     title?: string;  // 工具名称
@@ -26,6 +34,8 @@ const props = defineProps<{
     linkText?: string;// 链接文字
     link?: string;
 }>();
+
+const isInternal = computed(() => props.link?.startsWith('/'));
 </script>
 
 <style scoped>
