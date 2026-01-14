@@ -31,7 +31,7 @@
           <div class="flex rounded-lg p-0.5">
             <button
               v-for="device in devices"
-              :key="device.key"
+              :key="device.id"
               @click="toggleDeviceVisibility(device)"
               :class="[
                 'p-0 rounded-md bg-white dark:bg-gray-700 transition-all duration-200 border border-transparent hover:border-gray-300 dark:hover:border-gray-600 flex items-center justify-center w-8 h-8',
@@ -72,7 +72,7 @@
 
       <div
         v-for="device in devices"
-        :key="device.key"
+        :key="device.id"
         v-show="device.visible"
         class="absolute transition-transform duration-75 ease-linear origin-center select-none will-change-transform"
         :style="{ 
@@ -80,12 +80,26 @@
           zIndex: device.zIndex 
         }"
         @mousedown.stop="startDrag($event, device)"
+        @contextmenu.stop.prevent="showContextMenu($event, device)"
       >
         <div class="group relative flex flex-col items-center">
           
           <div class="absolute -top-10 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-default">
             <div class="bg-gray-800 text-white text-xs py-1 px-3 rounded-full shadow-lg flex items-center gap-2 pointer-events-auto">
               <span class="font-bold mr-1">{{ device.name }}</span>
+              <span class="opacity-50">|</span>
+              <button 
+                @click.stop="toggleInteraction(device)"
+                :class="[
+                  'hover:text-blue-300 transition-colors flex items-center gap-1',
+                  device.isInteractive ? 'text-green-400' : ''
+                ]"
+                :title="device.isInteractive ? '锁定内容（允许拖拽）' : '操作内容（禁止拖拽）'"
+              >
+                <svg v-if="!device.isInteractive" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+                <svg v-else class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" /></svg>
+                {{ device.isInteractive ? '操作' : '查看' }}
+              </button>
               <span class="opacity-50">|</span>
               <button 
                 v-if="device.canRotate" 
@@ -101,11 +115,11 @@
             </div>
           </div>
 
-          <div v-if="device.key === 'desktop'" class="cursor-move">
+          <div v-if="device.type === 'desktop'" class="cursor-move">
             <div class="relative bg-gray-800 dark:bg-gray-700 rounded-t-xl border-[12px] border-gray-800 dark:border-gray-700 shadow-2xl">
               <div class="absolute top-[-8px] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gray-600 rounded-full z-10"></div>
               <div class="relative bg-white overflow-hidden w-[640px] h-[360px]">
-                 <div class="absolute inset-0 z-20 bg-transparent"></div>
+                 <div v-if="!device.isInteractive" class="absolute inset-0 z-20 bg-transparent"></div>
                  <iframe 
                   :src="currentUrl" 
                   class="w-[1920px] h-[1080px] border-0 origin-top-left transform scale-[0.3333]"
@@ -121,9 +135,9 @@
             <div class="w-32 h-2 bg-gray-300 dark:bg-gray-600 rounded-full shadow-lg mx-auto"></div>
           </div>
 
-          <div v-else-if="device.key === 'laptop'" class="cursor-move flex flex-col items-center animate-fade-in-up">
+          <div v-else-if="device.type === 'laptop'" class="cursor-move flex flex-col items-center animate-fade-in-up">
             <div class="relative bg-gray-800 rounded-t-xl border-[10px] border-gray-800 shadow-2xl">
-              <div class="relative bg-white overflow-hidden w-[400px] h-[250px]"> <div class="absolute inset-0 z-20 bg-transparent"></div>
+              <div class="relative bg-white overflow-hidden w-[400px] h-[250px]"> <div v-if="!device.isInteractive" class="absolute inset-0 z-20 bg-transparent"></div>
                 <iframe 
                   :src="currentUrl" 
                   class="w-[1280px] h-[800px] border-0 origin-top-left transform scale-[0.3125]" sandbox="allow-scripts allow-same-origin"
@@ -136,7 +150,7 @@
             </div>
           </div>
 
-          <div v-else-if="device.key === 'tablet'" class="cursor-move">
+          <div v-else-if="device.type === 'tablet'" class="cursor-move">
             <div 
               class="relative bg-gray-800 rounded-[1rem] p-1.5 shadow-2xl border border-gray-700 transition-all duration-500"
               :class="device.isLandscape ? 'w-[320px] h-[230px]' : 'w-[230px] h-[320px]'" >
@@ -146,7 +160,7 @@
               ]"></div>
               
               <div class="relative bg-white overflow-hidden w-full h-full rounded-2xl">
-                <div class="absolute inset-0 z-20 bg-transparent"></div>
+                <div v-if="!device.isInteractive" class="absolute inset-0 z-20 bg-transparent"></div>
                 <iframe 
                   :src="currentUrl" 
                   class="border-0 origin-top-left transition-all duration-500"
@@ -162,7 +176,7 @@
             </div>
           </div>
 
-          <div v-else-if="device.key === 'mobile'" class="cursor-move">
+          <div v-else-if="device.type === 'mobile'" class="cursor-move">
             <div 
               class="relative bg-gray-900 shadow-2xl border-1 border-gray-700 ring-2 ring-black transition-all duration-500"
               :class="[
@@ -181,7 +195,7 @@
                 class="relative overflow-hidden w-full h-full bg-black transition-all flex flex-col" 
                 :class="device.isLandscape ? 'rounded-[0.8rem] pl-0' : 'rounded-[0.8rem] pt-0 mt-0'" 
               >
-                 <div class="absolute inset-0 z-20 bg-transparent"></div>
+                 <div v-if="!device.isInteractive" class="absolute inset-0 z-20 bg-transparent"></div>
                  
                  <div class="flex-1 w-full bg-white relative overflow-hidden rounded-t-lg">
                     <iframe 
@@ -204,15 +218,31 @@
         </div>
       </div>
 
+      <!-- Context Menu -->
+      <div
+        v-if="contextMenu.visible"
+        :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
+        class="fixed z-[9999] bg-white dark:bg-gray-800 shadow-xl rounded-md py-1 border border-gray-200 dark:border-gray-700 min-w-[120px]"
+        @click.stop
+      >
+        <button
+          @click="duplicateDevice"
+          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+        >
+          复制设备
+        </button>
+      </div>
+
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 
 interface Device {
-  key: string;
+  id: string;
+  type: string;
   name: string;
   icon: string;
   visible: boolean;
@@ -221,6 +251,7 @@ interface Device {
   zIndex: number;
   canRotate: boolean;
   isLandscape: boolean;
+  isInteractive: boolean;
 }
 
 const inputUrl = ref('https://siyuan.ink');
@@ -231,13 +262,13 @@ const maxZIndex = ref(10); // 用于管理层级
 // 根据图片调整的初始设备状态和位置
 const initialDevices: Device[] = [
   // Desktop - 中心偏右后方
-  { key: 'desktop', name: 'Desktop', icon: "mgc_computer_line", visible: true, x: 300, y: 100, zIndex: 1, canRotate: false, isLandscape: true },
+  { id: 'desktop-1', type: 'desktop', name: 'Desktop', icon: "mgc_computer_line", visible: true, x: 300, y: 100, zIndex: 1, canRotate: false, isLandscape: true, isInteractive: false },
   // Laptop - 右下方，部分在Desktop下方
-  { key: 'laptop', name: 'Laptop', icon: "mgc_laptop_line", visible: true, x: 750, y: 380, zIndex: 2, canRotate: false, isLandscape: true },
+  { id: 'laptop-1', type: 'laptop', name: 'Laptop', icon: "mgc_laptop_line", visible: true, x: 750, y: 380, zIndex: 2, canRotate: false, isLandscape: true, isInteractive: false },
   // Tablet - 左前方
-  { key: 'tablet', name: 'Tablet', icon: "mgc_pad_line", visible: true, x: 180, y: 380, zIndex: 3, canRotate: true, isLandscape: false },
+  { id: 'tablet-1', type: 'tablet', name: 'Tablet', icon: "mgc_pad_line", visible: true, x: 180, y: 380, zIndex: 3, canRotate: true, isLandscape: false, isInteractive: false },
   // Mobile - 左前方，部分在Tablet下方
-  { key: 'mobile', name: 'Mobile', icon: "mgc_cellphone_line", visible: true, x: 380, y: 450, zIndex: 4, canRotate: true, isLandscape: false },
+  { id: 'mobile-1', type: 'mobile', name: 'Mobile', icon: "mgc_cellphone_line", visible: true, x: 380, y: 450, zIndex: 4, canRotate: true, isLandscape: false, isInteractive: false },
 ];
 
 const devices = reactive<Device[]>(JSON.parse(JSON.stringify(initialDevices)));
@@ -257,17 +288,47 @@ const toggleDeviceVisibility = (device: Device) => {
 };
 
 const resetLayout = () => {
-  // 恢复初始位置和可见性
-  initialDevices.forEach((init, index) => {
-    devices[index].x = init.x;
-    devices[index].y = init.y;
-    devices[index].isLandscape = init.isLandscape;
-    devices[index].visible = init.visible; // 也重置可见性
-  });
+  // 恢复初始位置和可见性，并移除所有新增设备
+  devices.splice(0, devices.length, ...JSON.parse(JSON.stringify(initialDevices)));
 };
 
 const rotateDevice = (device: Device) => {
   device.isLandscape = !device.isLandscape;
+};
+
+const contextMenu = reactive({
+  visible: false,
+  x: 0,
+  y: 0,
+  deviceId: ''
+});
+
+const showContextMenu = (event: MouseEvent, device: Device) => {
+  contextMenu.visible = true;
+  contextMenu.x = event.clientX;
+  contextMenu.y = event.clientY;
+  contextMenu.deviceId = device.id;
+};
+
+const closeContextMenu = () => {
+  contextMenu.visible = false;
+};
+
+const duplicateDevice = () => {
+  const device = devices.find(d => d.id === contextMenu.deviceId);
+  if (device) {
+    const newDevice = JSON.parse(JSON.stringify(device));
+    newDevice.id = device.type + '-' + Date.now();
+    newDevice.x += 30;
+    newDevice.y += 30;
+    newDevice.zIndex = ++maxZIndex.value;
+    devices.push(newDevice);
+  }
+  closeContextMenu();
+};
+
+const toggleInteraction = (device: Device) => {
+  device.isInteractive = !device.isInteractive;
 };
 
 // --- 拖拽系统实现 ---
@@ -318,10 +379,15 @@ const startPan = () => {
 };
 
 onMounted(() => {
+  window.addEventListener('click', closeContextMenu);
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     isDark.value = true;
     document.documentElement.classList.add('dark');
   }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeContextMenu);
 });
 </script>
 

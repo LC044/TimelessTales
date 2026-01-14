@@ -1,6 +1,6 @@
 <template>
   <ReportPage class="section-farthest-city" :class="{ 'animate-in': isActive }">
-    <div class="h-full w-full flex flex-col p-0 overflow-hidden" ref="sectionRef">
+    <div class="h-full w-full flex flex-col p-0 overflow-hidden justify-center" ref="sectionRef">
       
       <!-- 1. Upper Part: Core Data Area (30%) -->
       <div class="h-[30%] flex flex-col justify-center items-center text-center relative z-10 px-4 mt-6">
@@ -227,7 +227,9 @@ const showPreview = ref(false);
 const currentPreviewPhoto = ref('');
 
 const previewPhoto = (photo: Photo, index: number) => {
-    currentPreviewPhoto.value = `/api/medias/${photo.id}/thumbnail?size=medium`;
+    // currentPreviewPhoto.value = `/api/medias/${photo.id}/thumbnail?size=medium`;
+
+    currentPreviewPhoto.value =`https://picsum.photos/seed/${photo.id}/400/600`;
     showPreview.value = true;
 };
 

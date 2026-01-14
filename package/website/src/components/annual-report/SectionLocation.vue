@@ -1,6 +1,6 @@
 <template>
   <ReportPage class="section-location" :class="{ 'animate-in': isActive }">
-    <div class="h-full w-full flex flex-col p-0" ref="sectionRef">
+    <div class="h-full w-full flex flex-col p-0 justify-center" ref="sectionRef">
       <!-- 标题区域 -->
       <div class="text-center mb-6 fade-in-up" :style="{ animationDelay: '0.1s' }">
         <h2 class="text-2xl font-bold text-orange-500 mb-2">步履所至 · 年度足迹地图</h2>
@@ -44,7 +44,7 @@
       </div>
 
       <!-- 下半部分：可视化地图核心区 -->
-      <div class="flex-1 relative w-full h-full min-h-0 bg-white dark:bg-[#1E1E1E] rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden fade-in-up" :style="{ animationDelay: '0.6s' }">
+      <div class="flex-1 relative w-full h-full max-h-[calc(60vh-12px)] bg-white dark:bg-[#1E1E1E] rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden fade-in-up" :style="{ animationDelay: '0.6s' }">
          <div ref="mapContainer" class="w-full h-full absolute inset-0"></div>
          
          <!-- 地图加载中/失败 兜底 -->
