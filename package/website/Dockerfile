@@ -9,8 +9,8 @@ COPY ./package.json ./
 # 复制项目文件
 COPY . .
 RUN corepack enable
-RUN npm install -g pnpm --force
-# RUN corepack prepare pnpm@10.18.3 --activate
+# 固定 pnpm 版本：pnpm 11+ 不再允许通过全局 config.yaml 设置 network-timeout 等项目级配置（ERR_PNPM_CONFIG_SET_UNSUPPORTED_YAML_CONFIG_KEY）
+RUN corepack prepare pnpm@10.18.3 --activate
 RUN pnpm config set network-timeout 600000 -g
 RUN pnpm config set registry https://registry.npmmirror.com -g
 RUN pnpm config set fetch-retries 20 -g
