@@ -21,7 +21,7 @@
 
         <div class="flex items-center space-x-1">
           <a
-            href="https://beian.miit.gov.cn/"
+            href="https://beian.miit.gov.cn"
             target="_blank"
             rel="noopener noreferrer"
             class="text-sm text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 flex items-center"

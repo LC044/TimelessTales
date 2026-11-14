@@ -1,18 +1,20 @@
 <!-- src/layouts/MainLayout.vue -->
 <template>
-  <div 
-    :class="[isDarkMode ? 'dark' : '']" 
+  <div
+    :class="[isDarkMode ? 'dark' : '']"
     :style="themeStyle"
-    class="min-h-screen font-sans transition-colors duration-300 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+    class="min-h-screen flex flex-col font-sans transition-colors duration-300 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200"
   >
     <!-- 顶部导航（原 App.vue 中的 NavBar） -->
     <NavBar />
-    <div class="container-main dark:bg-gray-900 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+    <div class="container-main dark:bg-gray-900 dark:from-gray-900 dark:to-gray-800 flex-1">
       <!-- 页面内容挂载点：所有子页面渲染在这里 -->
       <transition name="fade-slide" mode="out-in">
         <router-view />
       </transition>
     </div>
+    <!-- 页脚：悬挂 ICP 备案号（链接至工信部网站） -->
+    <Footer />
   </div>
 </template>
 
