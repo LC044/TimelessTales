@@ -5,5 +5,5 @@ requests
 pydantic
 apscheduler
 aiohttp
-sqlalchemy
+sqlalchemy[asyncio]
 aiosqlite==0.21.0
